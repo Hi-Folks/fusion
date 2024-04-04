@@ -1,0 +1,56 @@
+{
+    "name": "hi-folks/fusion",
+    "description": "Empowering Markdown and Frontmatter for Structured, Database-free Content Management",
+    "keywords": [
+        "hi-folks",
+        "fusion",
+        "markdown",
+        "eloquent",
+        "laravel"
+    ],
+    "homepage": "https://github.com/hi-folks/fusion",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Roberto B",
+            "email": "roberto.butti@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2|^8.3",
+        "illuminate/support": "^11.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "HiFolks\\Fusion\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HiFolks\\Fusion\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "HiFolks\\Fusion\\FusionServiceProvider"
+            ],
+            "aliases": {
+                "Fusion": "HiFolks\\Fusion\\FusionFacade"
+            }
+        }
+    }
+}
