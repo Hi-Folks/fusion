@@ -7,6 +7,9 @@
 Fusion revolutionizes **website development** by integrating the power of **Markdown and Frontmatter**, enabling developers to effortlessly create content-driven websites without the hassle of managing databases. With Fusion, developers can harness the simplicity of Markdown syntax combined with the flexibility of Frontmatter to **organize and structure content** seamlessly.
 By parsing Frontmatter into **Eloquent models**, Fusion empowers developers to build complex, structured websites with ease. Say goodbye to database management complexities and hello to streamlined website development with Fusion.
 
+> [!WARNING]
+> The package is under development (version 0.0.x), so the functions, classes and methods provided can be changed, especially for the `FusionBaseModel` model class. So, if you want to start using the package in order to provide feedback, you are welcome, but please don't use it in production until the version 1.0.0 will be released. Thank you
+
 ## Installation
 
 You can install the package via composer:
