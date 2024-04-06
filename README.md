@@ -16,7 +16,7 @@ Say goodbye to the complexities of database management and welcome simplified we
 
 ## Installation
 
-You can install the package via composer:
+You can install the package via the `composer` tool:
 
 ```shell
 composer require hi-folks/fusion
@@ -60,17 +60,12 @@ namespace App\Models;
 
 
 use HiFolks\Fusion\Models\FusionBaseModel;
-use Sushi\Sushi;
+use HiFolks\Fusion\Traits\FusionModelTrait;
 
 class Article extends FusionBaseModel
 {
-    use Sushi;
+    use FusionModelTrait;
 
-    public function getRows()
-    {
-        return parent::getRows();
-
-    }
 
     public function frontmatterFields(): array
     {
@@ -84,8 +79,7 @@ class Article extends FusionBaseModel
 ```
 Consider that:
 - the class has to extend the FusionBaseModel with `extends FusionBaseModel`;
-- you have to use the trait Sushi: `use Sushi;`
-- you have to implement the `getRows()` function returning `return parent::getRows();`
+- you have to use the trait FusionModelTrait: `use FusionModelTrait;`
 - you have to implement the `frontmatterFields()` function for returning the list of the field names used in the frontmatter header.
 
 ### Querying the content

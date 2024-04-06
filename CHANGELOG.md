@@ -1,7 +1,6 @@
 # Changelog
 
-All notable changes to `fusion` will be documented in this file
 
-## 0.0.1 - 2024-04-XX
+## 0.0.1 - 2024-04-06
 
-- initial release
+- Welcome Fusion! First *preview* release

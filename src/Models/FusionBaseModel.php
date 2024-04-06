@@ -68,7 +68,7 @@ abstract class FusionBaseModel extends Model
                 'title' => $object->matter('title'),
                 'label' => $object->matter('label'),
                 'excerpt' => $object->matter('excerpt'),
-                'date' => Carbon::createFromTimestamp($object->matter('date'))->format('Y-m-d'),
+                'date' => $object->matter('date') ? Carbon::createFromTimestamp($object->matter('date'))->format('Y-m-d') : null,
                 'slug' => $slug,
                 'body' => $converter->convert($object->body()),
                 'real_path' => $file->getRealPath(),
