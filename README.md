@@ -1,8 +1,37 @@
-# Fusion
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/hi-folks/fusion.svg?style=flat-square)](https://packagist.org/packages/hi-folks/fusion)
-[![Total Downloads](https://img.shields.io/packagist/dt/hi-folks/fusion.svg?style=flat-square)](https://packagist.org/packages/hi-folks/fusion)
-![GitHub Actions](https://github.com/hi-folks/fusion/actions/workflows/main.yml/badge.svg)
+<p align="center">
+    <img src="https://repository-images.githubusercontent.com/781827813/6cd3b16b-b318-4f90-8a03-77bbded91c02" alt="Laravel package that enhances Eloquent models to facilitate the management of structured, database-free content through Markdown files with Frontmatter.">
+</p>
+
+<h1 align="center">
+    Fusion
+</h1>
+
+<p align=center>
+    <a href="https://packagist.org/packages/hi-folks/fusion">
+        <img src="https://img.shields.io/packagist/v/hi-folks/fusion.svg?style=for-the-badge" alt="Latest Version on Packagist">
+    </a>
+    <a href="https://packagist.org/packages/hi-folks/fusion">
+        <img src="https://img.shields.io/packagist/dt/hi-folks/fusion.svg?style=for-the-badge" alt="Total Downloads">
+    </a>
+    <br />
+    <img src="https://img.shields.io/packagist/l/hi-folks/fusion?style=for-the-badge" alt="Packagist License">
+    <img src="https://img.shields.io/packagist/php-v/hi-folks/fusion?style=for-the-badge" alt="Packagist PHP Version Support">
+    <img src="https://img.shields.io/github/last-commit/hi-folks/fusion?style=for-the-badge" alt="GitHub last commit">
+    <br />
+        <img src="https://img.shields.io/github/actions/workflow/status/hi-folks/fusion/main.yml?style=for-the-badge&label=Test
+
+        " alt="Tests">
+</p>
+
+
+
+<p align=center>
+    <i>
+        Laravel package that enhances Eloquent models to facilitate the management of structured, database-free content through Markdown files with Frontmatter.
+    </i>
+</p>
+
 
 Fusion aids in **website development** by integrating the power of **Markdown and Frontmatter**, enabling developers to create content-driven Web sites without having to manage databases.
 
