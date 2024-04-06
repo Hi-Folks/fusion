@@ -118,6 +118,32 @@ $articles = \App\Models\Article
 ```
 
 
+### Adding real-time reload
+If you want the browser to automatically reload the pages when you change some content in the Markdown files you can set the `refresh` option in the `laravel` Vite plugin.
+In the `vite.config.js` file add the `refresh` option with the list of the folder you want that Vite will "watch" for changes and reload the page.
+
+```js
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ["resources/css/app.css", "resources/js/app.js"],
+            refresh: [
+                {
+                    paths: ["resources/content/**"],
+                },
+            ],
+        }),
+    ]
+});
+```
+
+In the example, the `resources/content` directory is added.
+
+> If you need to setup the Vite asset bundling you can take a look at the LAravel documentation: https://laravel.com/docs/11.x/vite
+
 
 ### Testing
 
