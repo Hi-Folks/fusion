@@ -1,10 +1,7 @@
-
-
-
 <h1 align="center">
     Fusion
 </h1>
-<hr />
+
 <p align=center>
     <a href="https://packagist.org/packages/hi-folks/fusion">
         <img src="https://img.shields.io/packagist/v/hi-folks/fusion.svg?style=for-the-badge" alt="Latest Version on Packagist">
