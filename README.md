@@ -161,7 +161,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### Security
 
-If you discover any security-related issues, please email roberto.butti@gmail.com instead of using the issue tracker.
+If you discover any security-related issues, please open an issue in the tracker [using the "New issue" functionality](https://github.com/Hi-Folks/fusion/issues/new?labels=security&title=SECURITY).
 
 ## Credits
 
@@ -171,6 +171,17 @@ If you discover any security-related issues, please email roberto.butti@gmail.co
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+## References
+We built this Open Source project using some nice and powerful Open Source libraries like:
+- [Sushi](https://github.com/calebporzio/sushi): Eloquent's missing "array" driver;
+- [league/commonmark](https://github.com/thephpleague/commonmark): Highly-extensible PHP Markdown parser which fully supports the CommonMark and GFM specs;
+- [yaml-front-matter](https://github.com/spatie/yaml-front-matter): A to the point yaml front matter parser;
+- [PestPHP](https://github.com/pestphp/pest): Pest is an elegant PHP testing Framework with a focus on simplicity, meticulously designed to bring back the joy of testing in PHP. Under the hood PestPHP uses [PHPUnit, the PHP testing framework](https://phpunit.de);
+- [RectorPHP](https://github.com/rectorphp/rector): Instant Upgrades and Automated Refactoring of any PHP 5.3+ code;
+- [Laravel Pint](https://github.com/laravel/pint): an opinionated PHP code style fixer for minimalists. Under the hood, Laravel Pint uses [PHP-CS-Fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer) the open source tool to automatically fix PHP Coding Standards issues.
+
+
 
 ## Laravel Package Boilerplate
 
