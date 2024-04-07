@@ -20,7 +20,7 @@ abstract class FusionBaseModel extends Model
         $folderName = str_replace(
             'App\\Models\\',
             '',
-            get_called_class()
+            static::class
         );
         $folderName = Str::snake($folderName);
 
@@ -39,14 +39,17 @@ abstract class FusionBaseModel extends Model
         ];
     }
 
-    public function getRows()
+    public function getRows(): array
     {
         return $this->getFrontmatterRows(
             $this->frontmatterFields()
         );
     }
 
-    public function getFrontmatterRows($columns = [])
+    /**
+     * @return non-empty-array[]
+     */
+    public function getFrontmatterRows($columns = []): array
     {
 
         $environment = (new Environment())

@@ -8,7 +8,7 @@ trait FusionModelTrait
 {
     use Sushi;
 
-    public function getRows()
+    public function getRows(): array
     {
         return parent::getRows();
     }
