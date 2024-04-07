@@ -39,7 +39,7 @@ abstract class FusionBaseModel extends Model
         ];
     }
 
-    public function getRows()
+    public function getRows(): array
     {
         return $this->getFrontmatterRows(
             $this->frontmatterFields()

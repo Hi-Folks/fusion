@@ -53,6 +53,6 @@ class FusionServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'fusion');
 
         // Register the main class to use with the facade
-        $this->app->singleton('fusion', fn(): \HiFolks\Fusion\Fusion => new Fusion);
+        $this->app->singleton('fusion', static fn (): \HiFolks\Fusion\Fusion => new Fusion);
     }
 }
