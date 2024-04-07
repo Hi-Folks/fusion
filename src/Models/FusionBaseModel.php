@@ -46,7 +46,10 @@ abstract class FusionBaseModel extends Model
         );
     }
 
-    public function getFrontmatterRows($columns = [])
+    /**
+     * @return non-empty-array[]
+     */
+    public function getFrontmatterRows($columns = []): array
     {
 
         $environment = (new Environment())

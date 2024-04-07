@@ -15,5 +15,10 @@ return RectorConfig::configure()
     ->withRules([
         AddVoidReturnTypeWhereNoReturnRector::class,
     ])
-
+    ->withPreparedSets(
+        deadCode: true,
+        codeQuality: true,
+        earlyReturn: true,
+        typeDeclarations: true
+    )
     ;
