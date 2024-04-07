@@ -20,7 +20,7 @@ abstract class FusionBaseModel extends Model
         $folderName = str_replace(
             'App\\Models\\',
             '',
-            get_called_class()
+            static::class
         );
         $folderName = Str::snake($folderName);
 
