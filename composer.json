@@ -44,7 +44,9 @@
   "scripts": {
     "style-fix": "vendor/bin/pint",
     "test": "vendor/bin/pest",
-    "test-coverage": "vendor/bin/pest coverage"
+    "test-coverage": "vendor/bin/pest coverage",
+    "style-ci": "vendor/bin/pint --test",
+    "rector-ci": "vendor/bin/rector process --dry-run"
   },
   "config": {
     "sort-packages": true,

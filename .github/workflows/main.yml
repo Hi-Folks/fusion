@@ -41,6 +41,12 @@ jobs:
               run: |
                   composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                   composer update --${{ matrix.stability }} --prefer-dist --no-interaction
-            - name: Run tests
+            - name: Running tests
               run: |
                   composer run test
+            - name: Checking style
+              run: |
+                  composer run style-ci
+            - name: Executing RectorPHP
+              run: |
+                  composer run rector-ci
