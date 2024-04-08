@@ -4,7 +4,6 @@ namespace HiFolks\Fusion\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use League\CommonMark\Environment\Environment;
@@ -36,6 +35,21 @@ abstract class FusionBaseModel extends Model
     {
         return [
             'title',
+
+        ];
+    }
+
+    /**
+     * Return the list of the field name managed by the base class
+     */
+    public static function frontmatterBaseFields(): array
+    {
+        return [
+            'title',
+            'slug',
+            'body',
+            'real_path',
+            'relative_path_name',
         ];
     }
 
@@ -68,21 +82,15 @@ abstract class FusionBaseModel extends Model
             $object = YamlFrontMatter::parse($fileContent);
 
             $row = [
-                'title' => $object->matter('title'),
-                'label' => $object->matter('label'),
-                'excerpt' => $object->matter('excerpt'),
-                'date' => $object->matter('date') ? Carbon::createFromTimestamp($object->matter('date'))->format('Y-m-d') : null,
                 'slug' => $slug,
                 'body' => $converter->convert($object->body()),
                 'real_path' => $file->getRealPath(),
                 'relative_path_name' => $file->getRelativePathname(),
-                'published' => $object->matter('published'),
-                'highlight' => $object->matter('highlight'),
-
             ];
 
             foreach ($columns as $column) {
-                $row[$column] = $object->matter($column);
+                $row[$column] = is_array($object->matter($column)) ? json_encode($object->matter($column)) : $object->matter($column);
+
             }
 
             $markdowns[] = $row;
