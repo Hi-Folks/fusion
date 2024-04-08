@@ -117,8 +117,17 @@ $articles = \App\Models\Article
     ->get();
 ```
 
+## Advanced Usage
+Once you understand the basics of using Fusion with your Markdown files, you can use some of the advanced features. Consider that Fusion is a LAravel Package and during the design and the implementation of the Package we try to use and adhere to as much as possible the Laravel functionalities.
+With this approach, we think that we can inherit all the benefits of some Laravel features.
+Some of these feature that we explore and explain in the next sections are:
 
-### Adding real-time reload
+- Reloading the page of the website you are visualizing in the Browser when you change the Markdown content;
+- Casting date in the Model so you can use the date in the Frontmatter headers;
+- Casting collection in the Model so you can use complex and nested Frontmatter headers;
+- Using the Check Markdown command for detecting the Frontmatter fields in the Markdown files.
+
+### Adding real-time page reload
 If you want the browser to automatically reload the pages when you change some content in the Markdown files you can set the `refresh` option in the `laravel` Vite plugin.
 In the `vite.config.js` file add the `refresh` option with the list of the folder you want that Vite will "watch" for changes and reload the page.
 
@@ -144,14 +153,115 @@ In the example, the `resources/content` directory is added.
 
 > If you need to setup the Vite asset bundling you can take a look at the LAravel documentation: https://laravel.com/docs/11.x/vite
 
+### Using dates in the Markdown files
 
-### Testing
+If you want to use date (or date-time) in your front matter you can use the format YYYY-MM-DD in the Frontmatter for example:
+
+```markdown
+---
+date: 2023-01-26
+title: Example title for article 1
+---
+This is the **Markdown**.
+```
+
+Then in the Model you can set the casting in this way:
+
+```php
+    protected function casts(): array
+    {
+        return [
+            'date' => 'datetime:Y-m-d',
+        ];
+    }
+```
+
+Where `date` is the field name, the same name you are using in the Markdown.
+
+If you are adding a new field, remember to add the field name in the list of the frontmatter field in the `frontmatterFields()` function in the Model:
+
+```php
+    public function frontmatterFields(): array
+    {
+        return [
+            "title", "date", "excerpt", "published", "highlight", "head"
+        ];
+    }
+```
+
+
+
+> If you are interested into exploring more the attribute casting inthe Laravel Model you can take a look at [The Laravel Eloquent attribute casting documentation](https://laravel.com/docs/11.x/eloquent-mutators#attribute-casting).
+
+### Using collections in the Markdown files
+
+If you need to manage complex data in the Markdown, like for example a list of tags you can use the arrays in the Frontmatter:
+
+```markdown
+---
+date: 2023-01-26
+title: Example title for article 1
+excerpt: This will be a short excerpt from article number 1.
+published: true
+highlight: true
+head:
+  - tag: title
+    content: Custom about title
+  - tag: title2
+    content: Custom about title2
+---
+
+# Article 1
+
+Markdown goes here
+```
+
+In the example, we are adding a field named `head` which is an array of values for tag and content.
+
+In the Model file, you have to cast properly the `head` field as `collection`.
+
+```php
+    protected function casts(): array
+    {
+        return [
+            'head' => 'collection',
+            'date' => 'datetime:Y-m-d',
+        ];
+    }
+```
+
+So that in your blade files, you can loop through the `head` field and access to `tag` or `content` sub-fields:
+
+```php
+@if (! is_null($article->head))
+    @foreach ($article->head as $headItems)
+    <div class="mx-3 px-8 badge badge-neutral">{{ $headItems["tag"] }}</div>
+    @endforeach
+@else
+    <div class="mx-3 px-8 badge badge-ghost">No Tag</div>
+@endif
+```
+
+
+### Using the Check Markdown command
+
+To inspect the Markdown files and show and list the Frontmatter fields you can use the Artisan command `fusion:check`.
+
+```shell
+php artisan fusion:check
+```
+
+
+
+
+
+## Testing
 
 ```bash
 composer test
 ```
 
-### Changelog
+## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
