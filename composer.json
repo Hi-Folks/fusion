@@ -46,7 +46,13 @@
     "test": "vendor/bin/pest",
     "test-coverage": "vendor/bin/pest coverage",
     "style-ci": "vendor/bin/pint --test",
-    "rector-ci": "vendor/bin/rector process --dry-run"
+    "rector-ci": "vendor/bin/rector process --dry-run",
+    "rector": "vendor/bin/rector process",
+    "all": [
+        "@style-fix",
+        "@rector",
+        "@test"
+    ]
   },
   "config": {
     "sort-packages": true,
