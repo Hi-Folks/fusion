@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.3 - 2024-04-08
+- Adding Check Markdown command via `php artisan fusion:check`
+- Improving Frontmatter field management, adding dates field and array fields
+- Update documentation in the Readme file
+
 ## 0.0.2 - 2024-04-07
 - Adding Rector PHP https://github.com/rectorphp/rector
 - Updating Readme for real-time updates
