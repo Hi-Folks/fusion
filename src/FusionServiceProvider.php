@@ -3,6 +3,7 @@
 namespace HiFolks\Fusion;
 
 use HiFolks\Fusion\Console\Commands\CheckMarkdown;
+use HiFolks\Fusion\Console\Commands\CheckModel;
 use Illuminate\Support\ServiceProvider;
 
 class FusionServiceProvider extends ServiceProvider
@@ -43,6 +44,7 @@ class FusionServiceProvider extends ServiceProvider
             // Registering package commands.
             $this->commands([
                 CheckMarkdown::class,
+                CheckModel::class,
             ]);
         }
     }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.4 - 2024-04-09
+- Adding Check Model command via `php artisan fusion:check-model`
+
 ## 0.0.3 - 2024-04-08
 - Adding Check Markdown command via `php artisan fusion:check`
 - Improving Frontmatter field management, adding dates field and array fields

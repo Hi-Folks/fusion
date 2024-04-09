@@ -191,7 +191,7 @@ If you are adding a new field, remember to add the field name in the list of the
 
 
 
-> If you are interested into exploring more the attribute casting inthe Laravel Model you can take a look at [The Laravel Eloquent attribute casting documentation](https://laravel.com/docs/11.x/eloquent-mutators#attribute-casting).
+> If you are interested into exploring more the attribute casting in the Laravel Model you can take a look at [The Laravel Eloquent attribute casting documentation](https://laravel.com/docs/11.x/eloquent-mutators#attribute-casting).
 
 ### Using collections in the Markdown files
 
@@ -251,8 +251,23 @@ To inspect the Markdown files and show and list the Frontmatter fields you can u
 php artisan fusion:check
 ```
 
+### Using the Check Model command
+
+To inspect the Model file and check if it extends the right class and uses the proper Traits to be a Model compatible with Markdown files, you can use the `fusion:check-model` command:
 
 
+```shell
+php artisan fusion:check-model --model="App\Models\Article"
+```
+
+The output will tell you if your model is correct or not:
+
+```text
+Parsing the Model File
+Class App\Models\Article exists
+App\Models\Article extends correctly the class HiFolks\Fusion\Models\FusionBaseModel
+App\Models\Article uses HiFolks\Fusion\Traits\FusionModelTrait
+```
 
 
 ## Testing
