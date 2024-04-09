@@ -35,7 +35,6 @@ abstract class FusionBaseModel extends Model
     {
         return [
             'title',
-
         ];
     }
 
