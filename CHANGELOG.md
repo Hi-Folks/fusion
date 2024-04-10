@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.5 - 2024-04-10
+- Adding Sync Model command for automatically generating the Model based on Markdown content
+
 ## 0.0.4 - 2024-04-09
 - Adding Check Model command via `php artisan fusion:check-model`
 
