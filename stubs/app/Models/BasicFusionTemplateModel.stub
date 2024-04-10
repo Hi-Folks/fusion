@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ namespace }};
+
+use HiFolks\Fusion\Traits\FusionModelTrait;
+use HiFolks\Fusion\Models\FusionBaseModel;
+
+class {{ class }} extends FusionBaseModel
+{
+    use FusionModelTrait;
+
+    public function frontmatterFields(): array
+    {
+        return [
+            {{ fields }}
+        ];
+    }
+}

@@ -107,6 +107,21 @@ Consider that:
 - you have to use the trait FusionModelTrait: `use FusionModelTrait;`
 - you have to implement the `frontmatterFields()` function for returning the list of the field names used in the frontmatter header.
 
+### Creating automatically the Model
+
+If you want to create automatically the Model file, based on the structure and the content of the Markdown files you can use the `fusion:sync-model` command:
+
+```shell
+php artisan fusion:sync-model --path=resources/content/project --create-model
+```
+
+The `path` parameter sets the **directory** of the markdown files for a specific model (like article, page, post, project etc.).
+The `--create-model` option will generate automatically the Model file based on the content and the frontmatter section of the Markdown files.
+Without the `--create-model` option the `fusion:sync-model` command will list some information detected from Markdown like the name of the Model and the list of the fields.
+
+
+
+
 ### Querying the content
 Now in your Controllers or your Blade components, you can use the `Article` model with the usual method like `where()`, `orderBy()` etc:
 
