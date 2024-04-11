@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Rector\CodingStyle\Rector\PostInc\PostIncDecToPreIncDecRector;
 use Rector\Config\RectorConfig;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
 
@@ -19,7 +20,10 @@ return RectorConfig::configure()
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
-        earlyReturn: true,
+        codingStyle: true,
         typeDeclarations: true,
-        codingStyle: true
-    );
+        earlyReturn: true
+    )
+    ->withSkip([
+        PostIncDecToPreIncDecRector::class,
+    ]);

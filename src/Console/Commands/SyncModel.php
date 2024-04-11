@@ -28,8 +28,24 @@ class SyncModel extends GeneratorCommand
      */
     protected $description = 'Sync the Model file from Markdown definition';
 
+    /**
+     * The auto-detected model name retrieved from the markdown folder.
+     * For example for resources/content/article the model name
+     * will be the folder base name in PascalCase format so Article
+     *
+     * @var string
+     */
     protected $modelName = '';
 
+    /**
+     * The auto-detected frontmatter field names retrieved
+     * by parsing all the markdown files in a specific folder
+     * The format of the field list is in string, useful to be used
+     * in the model for example:
+     * '"title", "description", "published"'
+     *
+     * @var string
+     */
     protected $frontmatterFields = '';
 
     /**
