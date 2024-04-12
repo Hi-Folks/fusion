@@ -53,7 +53,7 @@ class SyncModel extends GeneratorCommand
      */
     public function handle(): int
     {
-
+        $this->output->title('Sync Model');
         $markdownPath = $this->option('path');
         $createModel = $this->option('create-model');
 
@@ -61,9 +61,15 @@ class SyncModel extends GeneratorCommand
             $markdownPath = resource_path('content/article');
         }
 
-        $this->info('Parsing the Markdown Directory: '.$markdownPath);
+        $this->components->twoColumnDetail(
+            '<info>Parsing the Markdown Directory</info>',
+            sprintf('<info>%s</info>', $markdownPath));
+
         $modelName = basename($markdownPath);
-        $this->info('Folder Markdown Name: '.$modelName);
+
+        $this->components->twoColumnDetail(
+            '<info>Folder Markdown Name</info>',
+            sprintf('<info>%s</info>', $modelName));
 
         if (! is_dir($markdownPath)) {
             $this->error(sprintf('The Folder %s does not exist!', $markdownPath));
@@ -92,11 +98,20 @@ class SyncModel extends GeneratorCommand
         }
 
         $this->modelName = Str::studly($modelName);
-        $this->info('Model Name : '.$this->modelName.'');
+        $this->components->twoColumnDetail(
+            '<info>Model Name</info>',
+            sprintf('<info>%s</info>', $this->modelName));
+
+        $this->output->newLine();
         $this->frontmatterFields = '"'.implode('","', $collectedFields).'"';
-        $this->info('In the frontmatterFields method you have to return: '.
-            $this->frontmatterFields.
-            '');
+        $this->components->twoColumnDetail(
+            '<info>In the frontmatterFields() method you have to return:</info>',
+            ''
+        );
+        $this->components->twoColumnDetail(
+            '',
+            $this->frontmatterFields
+        );
 
         if ($createModel) {
             parent::handle();
