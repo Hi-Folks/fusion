@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.0.6 - WIP
+## 0.0.6 - 2024-04-12
 - Improved Check Markdown command output
+- Improved Sync Model command output
 
 ## 0.0.5 - 2024-04-10
 - Added Sync Model command for automatically generating the Model based on Markdown content
