@@ -73,12 +73,17 @@ abstract class FusionBaseModel extends Model
         $markdowns = [];
 
         foreach (File::allFiles(resource_path($this->getResourceFolder())) as $file) {
+            // default slug as filename
             $slug = $file->getFilenameWithoutExtension();
 
             $filename = $file->getRelativePathName();
             $fileContent = $filesystem->get($file->getRealPath());
 
             $object = YamlFrontMatter::parse($fileContent);
+
+            if (array_key_exists('slug', $object->matter())) {
+                $slug = $object->matter('slug');
+            }
 
             $row = [
                 'slug' => $slug,
