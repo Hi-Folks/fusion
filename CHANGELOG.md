@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.7 - 2024-04-14
+- customized slug
+
 ## 0.0.6 - 2024-04-12
 - Improved Check Markdown command output
 - Improved Sync Model command output

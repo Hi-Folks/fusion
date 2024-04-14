@@ -257,6 +257,30 @@ So that in your blade files, you can loop through the `head` field and access to
 @endif
 ```
 
+### Customizing the slug
+
+By default, the slug of a content is the filename without the extension.
+Now you can customize the slug using the frontmatter attribute `slug`.
+ For example:
+```markdown
+---
+date: 2023-04-13
+slug: fusion
+name: Fusion
+claim:  build Website with Markdown files
+excerpt: Fusion integrates Markdown into Laravel Models, simplifying Website development.
+published: true
+highlight: true
+image: /img/fusion-cover-website.webp
+tags:
+  - tag: Laravel
+  - tag: Website Development
+---
+
+# Fusion
+
+Fusion aids in website development by integrating the power of Markdown and Frontmatter, enabling developers to create content-driven Web sites without having to manage databases.
+```
 
 ### Using the Check Markdown command
 
