@@ -27,30 +27,45 @@ class CheckModel extends Command
      */
     public function handle(): int
     {
-        $this->info('Parsing the Model File');
+
+        $this->output->title('Parsing the Model File');
         $model = $this->option('model');
         if (is_null($model)) {
             $model = 'App\Models\Article';
         }
 
         if (class_exists($model)) {
-            $this->info(sprintf('Class %s exists', $model));
+            $this->components->twoColumnDetail(
+                '<info>'.$model.'</info>',
+                '<info>Exists</info>');
+
         } else {
-            $this->error(sprintf('Class %s does not exist', $model));
+            $this->components->twoColumnDetail(
+                '<info>'.$model.'</info>',
+                "<error>Doesn't exist</error>");
 
             return Command::INVALID;
         }
 
         if (is_subclass_of($model, FusionBaseModel::class)) {
-            $this->info($model.' extends correctly the class '.FusionBaseModel::class);
+            $this->components->twoColumnDetail(
+                '<info>'.$model.'</info>',
+                '<info>Extends correctly the class '.FusionBaseModel::class.'</info>');
+
         } else {
-            $this->warn($model." doesn't extend correctly the class ".FusionBaseModel::class);
+            $this->components->twoColumnDetail(
+                '<info>'.$model.'</info>',
+                '<error>Does not extend correctly the class '.FusionBaseModel::class.'</error>');
         }
 
         if (trait_exists(FusionModelTrait::class) && in_array(FusionModelTrait::class, class_uses($model))) {
-            $this->info($model.' uses '.FusionModelTrait::class);
+            $this->components->twoColumnDetail(
+                '<info>'.$model.'</info>',
+                '<info>Uses correctly the trait '.FusionModelTrait::class.'</info>');
         } else {
-            $this->warn($model.' does not use '.FusionModelTrait::class);
+            $this->components->twoColumnDetail(
+                '<info>'.$model.'</info>',
+                '<error>Does not use correctly the trait '.FusionModelTrait::class.'</error>');
 
         }
 
