@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.8 - 2024-04-17
+- Improved Check Model command output
+
 ## 0.0.7 - 2024-04-14
 - customized slug
 
