@@ -21,7 +21,7 @@
 
 <p align=center>
     <i>
-        Laravel package that enhances Eloquent models to facilitate the management of structured, database-free content through Markdown files with Frontmatter.
+Fusion is a Laravel package designed to manage Markdown content via Eloquent Models, eliminating the necessity for a conventional database setup. It achieves this by leveraging Markdown files enhanced with Frontmatter.
     </i>
 </p>
 
