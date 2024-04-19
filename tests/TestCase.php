@@ -1,10 +1,15 @@
 <?php
 
-namespace Tests;
+namespace HiFolks\Fusion\Tests;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use HiFolks\Fusion\FusionServiceProvider;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
-    //
+    protected function getPackageProviders($app)
+    {
+        return [
+            FusionServiceProvider::class,
+        ];
+    }
 }

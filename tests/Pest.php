@@ -11,7 +11,8 @@
 |
 */
 
-// uses(Tests\TestCase::class)->in('Feature');
+uses(HiFolks\Fusion\Tests\TestCase::class)->in('Feature');
+uses(HiFolks\Fusion\Tests\TestCase::class)->in('Unit');
 
 /*
 |--------------------------------------------------------------------------
