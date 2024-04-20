@@ -1,7 +1,12 @@
 # Changelog
 
-## 0.0.9 - WIP
-- 
+## 0.0.9 - 2024-04-20
+- Additional check for Sync Model command:
+  - check if no frontmatter fields are found in Markdown folder
+  - show full qualified name for the Model class
+  - check if the model class already exists
+- Introducing tests via PestPHP
+
 ## 0.0.8 - 2024-04-17
 - Improved Check Model command output
 
