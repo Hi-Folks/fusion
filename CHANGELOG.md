@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.0.9 - WIP
+- 
 ## 0.0.8 - 2024-04-17
 - Improved Check Model command output
 

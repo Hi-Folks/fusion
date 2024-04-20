@@ -6,3 +6,4 @@ composer.lock
 /tests/cache/
 .vscode/settings.json
 .phpunit.cache
+/coverage-html

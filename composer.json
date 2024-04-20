@@ -45,7 +45,8 @@
   "scripts": {
     "style-fix": "vendor/bin/pint",
     "test": "vendor/bin/pest",
-    "test-coverage": "vendor/bin/pest coverage",
+    "test-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage",
+    "test-coverage-html": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage-html coverage-html",
     "style-ci": "vendor/bin/pint --test",
     "rector-ci": "vendor/bin/rector process --dry-run",
     "rector": "vendor/bin/rector process",
