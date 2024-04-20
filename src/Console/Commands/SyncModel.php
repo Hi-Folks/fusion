@@ -62,13 +62,13 @@ class SyncModel extends GeneratorCommand
         }
 
         $this->components->twoColumnDetail(
-            '<info>Parsing the Markdown Directory</info>',
+            'Parsing the Markdown Directory',
             sprintf('<info>%s</info>', $markdownPath));
 
         $modelName = basename($markdownPath);
 
         $this->components->twoColumnDetail(
-            '<info>Folder Markdown Name</info>',
+            'Folder Markdown Name',
             sprintf('<info>%s</info>', $modelName));
 
         if (! is_dir($markdownPath)) {
@@ -99,19 +99,44 @@ class SyncModel extends GeneratorCommand
 
         $this->modelName = Str::studly($modelName);
         $this->components->twoColumnDetail(
-            '<info>Model Name</info>',
+            'Model Name',
             sprintf('<info>%s</info>', $this->modelName));
+        $className = $this->qualifyClass($this->getNameInput());
+        $path = $this->getPath($className);
+        $this->components->twoColumnDetail(
+            'Model Name (with Namespace)',
+            sprintf('<info>%s</info>', $className));
+        $this->components->twoColumnDetail(
+            'Model path',
+            sprintf('<info>%s</info>', $path));
+        if (is_file($path)) {
+            $this->components->twoColumnDetail(
+                'Check file',
+                '<info>File exists</info>');
+        } else {
+            $this->components->twoColumnDetail(
+                'Check file',
+                '<fg=yellow>Does NOT exists</>');
+        }
 
         $this->output->newLine();
-        $this->frontmatterFields = '"'.implode('","', $collectedFields).'"';
-        $this->components->twoColumnDetail(
-            '<info>In the frontmatterFields() method you have to return:</info>',
-            ''
-        );
-        $this->components->twoColumnDetail(
-            '',
-            $this->frontmatterFields
-        );
+        if ($collectedFields === []) {
+            $this->components->twoColumnDetail(
+                'Frontmatter fields',
+                sprintf('<fg=yellow>NO frontmatter fields found in %s path</>', $markdownPath));
+
+        } else {
+            $this->frontmatterFields = '"'.implode('","', $collectedFields).'"';
+            $this->components->twoColumnDetail(
+                'In the frontmatterFields() method you have to return:',
+                ''
+            );
+            $this->components->twoColumnDetail(
+                '',
+                $this->frontmatterFields
+            );
+
+        }
 
         if ($createModel) {
             parent::handle();
