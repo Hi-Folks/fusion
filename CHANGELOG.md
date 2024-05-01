@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.10 -2024-05-01
+
+- Adding support for code syntax higlight
+
 ## 0.0.9 - 2024-04-20
 - Additional check for Sync Model command:
   - check if no frontmatter fields are found in Markdown folder
