@@ -8,7 +8,11 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
+use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
 use League\CommonMark\MarkdownConverter;
+use Spatie\CommonMarkHighlighter\FencedCodeRenderer;
+use Spatie\CommonMarkHighlighter\IndentedCodeRenderer;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 
 abstract class FusionBaseModel extends Model
@@ -67,6 +71,11 @@ abstract class FusionBaseModel extends Model
 
         $environment = (new Environment())
             ->addExtension(new CommonMarkCoreExtension());
+
+        //$environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
+        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer());
+
         $converter = new MarkdownConverter($environment);
 
         $filesystem = new FileSystem();
