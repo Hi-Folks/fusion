@@ -23,7 +23,7 @@ class CheckMarkdown extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(): int
     {
 
         $this->output->title('Parsing the Markdown Files');
@@ -31,6 +31,23 @@ class CheckMarkdown extends Command
         $contentDirectory = $this->option('dir');
         if (is_null($contentDirectory)) {
             $contentDirectory = resource_path('content');
+        }
+
+        if (! is_dir($contentDirectory)) {
+            $this->warn(' The directory `'.$contentDirectory."` doesn't exist.");
+            $this->newLine();
+            $this->info(' You should create the directory `'.$contentDirectory.'` and start creating Markdown files in that directory.');
+            $this->newLine();
+            $this->output->listing(
+                [
+                    'Create the `'.$contentDirectory.'` directory;',
+                    'Create the content type directory, for example `'.$contentDirectory.'/article`',
+                    'Create the Markdown files in the new directory;',
+                    'Execute the `php artisan fusion:sync` command for generating the model.',
+                ]
+            );
+
+            return Command::INVALID;
         }
 
         foreach (File::directories($contentDirectory) as $directory) {
@@ -64,5 +81,7 @@ class CheckMarkdown extends Command
 
             $this->output->newLine();
         }
+
+        return Command::SUCCESS;
     }
 }
