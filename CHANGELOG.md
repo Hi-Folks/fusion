@@ -1,13 +1,15 @@
 # Changelog
 
-## 0.0.10 -2024-05-01
+## 0.0.11 - WIP
+- Adding check if content directory is present with the `php artisan fusion:check` command
 
-- Adding support for code syntax higlight
+## 0.0.10 - 2024-05-01
+- Adding support for code syntax highlights
 
 ## 0.0.9 - 2024-04-20
 - Additional check for Sync Model command:
-  - check if no frontmatter fields are found in Markdown folder
-  - show full qualified name for the Model class
+  - check if no front matter fields are found in the Markdown folder
+  - show the full qualified name for the Model class
   - check if the model class already exists
 - Introducing tests via PestPHP
 
