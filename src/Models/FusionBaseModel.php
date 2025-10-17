@@ -69,16 +69,16 @@ abstract class FusionBaseModel extends Model
     public function getFrontmatterRows($columns = []): array
     {
 
-        $environment = (new Environment())
-            ->addExtension(new CommonMarkCoreExtension());
+        $environment = (new Environment)
+            ->addExtension(new CommonMarkCoreExtension);
 
-        //$environment->addExtension(new CommonMarkCoreExtension());
-        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
-        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer());
+        // $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer);
+        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer);
 
         $converter = new MarkdownConverter($environment);
 
-        $filesystem = new FileSystem();
+        $filesystem = new FileSystem;
         $markdowns = [];
 
         foreach (File::allFiles(resource_path($this->getResourceFolder())) as $file) {

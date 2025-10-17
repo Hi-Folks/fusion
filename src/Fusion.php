@@ -2,6 +2,4 @@
 
 namespace HiFolks\Fusion;
 
-class Fusion
-{
-}
+class Fusion {}
