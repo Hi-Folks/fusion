@@ -36,9 +36,6 @@ With Fusion, developers can leverage the simplicity of Markdown syntax combined 
 By parsing Frontmatter into **Eloquent models**, Fusion enables developers to create complex, structured websites with ease.
 Say goodbye to the complexities of database management and welcome simplified website development with Fusion.
 
-> [!WARNING]
-> The package is under development (version 0.0.x), so the functions, classes and methods provided can be changed, especially for the `FusionBaseModel` model class. So, if you want to start using the package in order to provide feedback, you are welcome, but please don't use it in production until the version 1.0.0 will be released. Thank you
-
 ## Installation
 
 You can install the package via the `composer` tool:
