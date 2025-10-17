@@ -77,7 +77,7 @@ class SyncModel extends GeneratorCommand
             return Command::INVALID;
         }
 
-        $filesystem = new FileSystem();
+        $filesystem = new FileSystem;
 
         $collectedFields = [];
         foreach (File::files($markdownPath) as $file) {

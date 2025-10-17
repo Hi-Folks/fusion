@@ -27,7 +27,7 @@ class CheckMarkdown extends Command
     {
 
         $this->output->title('Parsing the Markdown Files');
-        $filesystem = new FileSystem();
+        $filesystem = new FileSystem;
         $contentDirectory = $this->option('dir');
         if (is_null($contentDirectory)) {
             $contentDirectory = resource_path('content');
@@ -52,7 +52,7 @@ class CheckMarkdown extends Command
 
         foreach (File::directories($contentDirectory) as $directory) {
             $this->components->twoColumnDetail('<info>Directory</info>', sprintf('<info>%s</info>', $directory));
-            //$this->output->->info('Directory: '.$directory);
+            // $this->output->->info('Directory: '.$directory);
             $numberNoMarkdown = 0;
             $numberMarkdown = 0;
             foreach (File::files($directory) as $file) {
