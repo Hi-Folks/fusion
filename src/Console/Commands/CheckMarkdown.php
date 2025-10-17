@@ -71,7 +71,7 @@ class CheckMarkdown extends Command
                 }
             }
 
-            if ($numberMarkdown == 0) {
+            if ($numberMarkdown === 0) {
                 $this->warn('No Markdown files in '.$directory);
             }
 

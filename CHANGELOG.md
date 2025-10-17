@@ -1,8 +1,9 @@
 # Changelog
 
-## 1.0.0 - WIP
+## 1.0.0 - 2025-10-17
 - Upgrading the support for Laravel 12
 - Adding check if content directory is present with the `php artisan fusion:check` command
+- Upgrading Rector 2
 
 ## 0.0.10 - 2024-05-01
 - Adding support for code syntax highlights
