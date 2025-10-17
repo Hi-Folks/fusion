@@ -1,6 +1,7 @@
 # Changelog
 
-## 0.0.11 - WIP
+## 1.0.0 - WIP
+- Upgrading the support for Laravel 12
 - Adding check if content directory is present with the `php artisan fusion:check` command
 
 ## 0.0.10 - 2024-05-01
