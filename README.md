@@ -109,7 +109,7 @@ Consider that:
 If you want to create automatically the Model file, based on the structure and the content of the Markdown files you can use the `fusion:sync-model` command:
 
 ```shell
-php artisan fusion:sync-model --path=resources/content/project --create-model
+php artisan fusion:sync-model --path=resources/content/article --create-model
 ```
 
 The `path` parameter sets the **directory** of the markdown files for a specific model (like article, page, post, project etc.).
