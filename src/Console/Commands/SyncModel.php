@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HiFolks\Fusion\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -63,13 +65,15 @@ class SyncModel extends GeneratorCommand
 
         $this->components->twoColumnDetail(
             'Parsing the Markdown Directory',
-            sprintf('<info>%s</info>', $markdownPath));
+            sprintf('<info>%s</info>', $markdownPath),
+        );
 
         $modelName = basename($markdownPath);
 
         $this->components->twoColumnDetail(
             'Folder Markdown Name',
-            sprintf('<info>%s</info>', $modelName));
+            sprintf('<info>%s</info>', $modelName),
+        );
 
         if (! is_dir($markdownPath)) {
             $this->error(sprintf('The Folder %s does not exist!', $markdownPath));
@@ -78,7 +82,7 @@ class SyncModel extends GeneratorCommand
             // return Command::INVALID;
         }
 
-        $filesystem = new FileSystem;
+        $filesystem = new FileSystem();
 
         $collectedFields = [];
         foreach (File::files($markdownPath) as $file) {
@@ -92,8 +96,8 @@ class SyncModel extends GeneratorCommand
             $collectedFields = array_unique(
                 array_merge(
                     $collectedFields,
-                    array_keys($object->matter())
-                )
+                    array_keys($object->matter()),
+                ),
             );
 
         }
@@ -101,40 +105,46 @@ class SyncModel extends GeneratorCommand
         $this->modelName = Str::studly($modelName);
         $this->components->twoColumnDetail(
             'Model Name',
-            sprintf('<info>%s</info>', $this->modelName));
+            sprintf('<info>%s</info>', $this->modelName),
+        );
         $className = $this->qualifyClass($this->getNameInput());
         $path = $this->getPath($className);
         $this->components->twoColumnDetail(
             'Model Name (with Namespace)',
-            sprintf('<info>%s</info>', $className));
+            sprintf('<info>%s</info>', $className),
+        );
         $this->components->twoColumnDetail(
             'Model path',
-            sprintf('<info>%s</info>', $path));
+            sprintf('<info>%s</info>', $path),
+        );
         if (is_file($path)) {
             $this->components->twoColumnDetail(
                 'Check file',
-                '<info>File exists</info>');
+                '<info>File exists</info>',
+            );
         } else {
             $this->components->twoColumnDetail(
                 'Check file',
-                '<fg=yellow>Does NOT exists</>');
+                '<fg=yellow>Does NOT exists</>',
+            );
         }
 
         $this->output->newLine();
         if ($collectedFields === []) {
             $this->components->twoColumnDetail(
                 'Frontmatter fields',
-                sprintf('<fg=yellow>NO frontmatter fields found in %s path</>', $markdownPath));
+                sprintf('<fg=yellow>NO frontmatter fields found in %s path</>', $markdownPath),
+            );
 
         } else {
-            $this->frontmatterFields = '"'.implode('","', $collectedFields).'"';
+            $this->frontmatterFields = '"' . implode('","', $collectedFields) . '"';
             $this->components->twoColumnDetail(
                 'In the frontmatterFields() method you have to return:',
-                ''
+                '',
             );
             $this->components->twoColumnDetail(
                 '',
-                $this->frontmatterFields
+                $this->frontmatterFields,
             );
 
         }
@@ -150,15 +160,15 @@ class SyncModel extends GeneratorCommand
 
     protected function getNameInput()
     {
-        return '\\App\\Models\\'.$this->modelName;
+        return '\\App\\Models\\' . $this->modelName;
     }
 
     protected function getStub()
     {
         return realpath(
-            __DIR__.
-            '/../../..'.
-            '/stubs/app/Models/BasicFusionTemplateModel.stub'
+            __DIR__
+            . '/../../..'
+            . '/stubs/app/Models/BasicFusionTemplateModel.stub',
         );
     }
 
@@ -167,7 +177,7 @@ class SyncModel extends GeneratorCommand
         $stub = str_replace(
             '{{ fields }}',
             $this->frontmatterFields,
-            $stub
+            $stub,
         );
 
         return parent::replaceClass($stub, $name);

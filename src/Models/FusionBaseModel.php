@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HiFolks\Fusion\Models;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -28,16 +30,16 @@ abstract class FusionBaseModel extends Model
         $folderName = str_replace(
             ['App\\Models\\', 'HiFolks\\Fusion\\Models\\'],
             '',
-            static::class
+            static::class,
         );
         $folderName = Str::snake($folderName);
 
-        $resourceDirectory = resource_path('content'.DIRECTORY_SEPARATOR);
+        $resourceDirectory = resource_path('content' . DIRECTORY_SEPARATOR);
         if (! is_null(config('fusion.content_directory'))) {
-            $resourceDirectory = __DIR__.'/../../'.config('fusion.content_directory');
+            $resourceDirectory = __DIR__ . '/../../' . config('fusion.content_directory');
         }
 
-        return $resourceDirectory.$folderName;
+        return $resourceDirectory . $folderName;
     }
 
     public function getRouteKeyName()
@@ -83,7 +85,7 @@ abstract class FusionBaseModel extends Model
     public function getRows(): array
     {
         return $this->getFrontmatterRows(
-            $this->frontmatterFields()
+            $this->frontmatterFields(),
         );
     }
 
@@ -94,16 +96,16 @@ abstract class FusionBaseModel extends Model
     public function getFrontmatterRows(array $columns = []): array
     {
 
-        $environment = (new Environment)
-            ->addExtension(new CommonMarkCoreExtension);
+        $environment = (new Environment())
+            ->addExtension(new CommonMarkCoreExtension());
 
         // $environment->addExtension(new CommonMarkCoreExtension());
-        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer);
-        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer);
+        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
+        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer());
 
         $converter = new MarkdownConverter($environment);
 
-        $filesystem = new FileSystem;
+        $filesystem = new FileSystem();
         $markdowns = [];
 
         foreach (File::allFiles($this->getResourceFolder()) as $file) {

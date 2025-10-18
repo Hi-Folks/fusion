@@ -26,7 +26,7 @@ uses(HiFolks\Fusion\Tests\TestCase::class)->in('Commands');
 |
 */
 
-expect()->extend('toBeOne', fn () => $this->toBe(1));
+expect()->extend('toBeOne', fn() => $this->toBe(1));
 
 /*
 |--------------------------------------------------------------------------

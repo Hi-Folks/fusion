@@ -1,0 +1,10 @@
+{
+    "preset": "per",
+    "rules": {
+        "increment_style": false
+    },
+    "exclude": [
+        "vendor",
+        "storage"
+    ]
+}

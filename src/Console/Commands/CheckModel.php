@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HiFolks\Fusion\Console\Commands;
 
 use HiFolks\Fusion\Models\FusionBaseModel;
@@ -36,36 +38,42 @@ class CheckModel extends Command
 
         if (class_exists($model)) {
             $this->components->twoColumnDetail(
-                '<info>'.$model.'</info>',
-                '<info>Exists</info>');
+                '<info>' . $model . '</info>',
+                '<info>Exists</info>',
+            );
 
         } else {
             $this->components->twoColumnDetail(
-                '<info>'.$model.'</info>',
-                "<error>Doesn't exist</error>");
+                '<info>' . $model . '</info>',
+                "<error>Doesn't exist</error>",
+            );
 
             return Command::INVALID;
         }
 
         if (is_subclass_of($model, FusionBaseModel::class)) {
             $this->components->twoColumnDetail(
-                '<info>'.$model.'</info>',
-                '<info>Extends correctly the class '.FusionBaseModel::class.'</info>');
+                '<info>' . $model . '</info>',
+                '<info>Extends correctly the class ' . FusionBaseModel::class . '</info>',
+            );
 
         } else {
             $this->components->twoColumnDetail(
-                '<info>'.$model.'</info>',
-                '<error>Does not extend correctly the class '.FusionBaseModel::class.'</error>');
+                '<info>' . $model . '</info>',
+                '<error>Does not extend correctly the class ' . FusionBaseModel::class . '</error>',
+            );
         }
 
         if (trait_exists(FusionModelTrait::class) && in_array(FusionModelTrait::class, class_uses($model))) {
             $this->components->twoColumnDetail(
-                '<info>'.$model.'</info>',
-                '<info>Uses correctly the trait '.FusionModelTrait::class.'</info>');
+                '<info>' . $model . '</info>',
+                '<info>Uses correctly the trait ' . FusionModelTrait::class . '</info>',
+            );
         } else {
             $this->components->twoColumnDetail(
-                '<info>'.$model.'</info>',
-                '<error>Does not use correctly the trait '.FusionModelTrait::class.'</error>');
+                '<info>' . $model . '</info>',
+                '<error>Does not use correctly the trait ' . FusionModelTrait::class . '</error>',
+            );
 
         }
 
