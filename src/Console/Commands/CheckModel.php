@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace HiFolks\Fusion\Console\Commands;
 
 use HiFolks\Fusion\Models\FusionBaseModel;
-use HiFolks\Fusion\Traits\FusionModelTrait;
+use HiFolks\Fusion\Traits\SushiModelTrait;
 use Illuminate\Console\Command;
 
 class CheckModel extends Command
@@ -64,15 +64,15 @@ class CheckModel extends Command
             );
         }
 
-        if (trait_exists(FusionModelTrait::class) && in_array(FusionModelTrait::class, class_uses($model))) {
+        if (trait_exists(SushiModelTrait::class) && in_array(SushiModelTrait::class, class_uses($model))) {
             $this->components->twoColumnDetail(
                 '<info>' . $model . '</info>',
-                '<info>Uses correctly the trait ' . FusionModelTrait::class . '</info>',
+                '<info>Uses correctly the trait ' . SushiModelTrait::class . '</info>',
             );
         } else {
             $this->components->twoColumnDetail(
                 '<info>' . $model . '</info>',
-                '<error>Does not use correctly the trait ' . FusionModelTrait::class . '</error>',
+                '<error>Does not use correctly the trait ' . SushiModelTrait::class . '</error>',
             );
 
         }

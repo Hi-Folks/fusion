@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HiFolks\Fusion\Models;
 
+use HiFolks\Fusion\Traits\SushiModelTrait;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,8 @@ use Symfony\Component\Yaml\Exception\ParseException;
 
 abstract class FusionBaseModel extends Model
 {
+    use SushiModelTrait;
+
     public function getResourceFolder(): string
     {
 

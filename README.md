@@ -82,12 +82,9 @@ namespace App\Models;
 
 
 use HiFolks\Fusion\Models\FusionBaseModel;
-use HiFolks\Fusion\Traits\FusionModelTrait;
 
 class Article extends FusionBaseModel
 {
-    use FusionModelTrait;
-
 
     public function frontmatterFields(): array
     {
@@ -101,7 +98,6 @@ class Article extends FusionBaseModel
 ```
 Consider that:
 - the class has to extend the FusionBaseModel with `extends FusionBaseModel`;
-- you have to use the trait FusionModelTrait: `use FusionModelTrait;`
 - you have to implement the `frontmatterFields()` function for returning the list of the field names used in the frontmatter header.
 
 ### Creating automatically the Model
