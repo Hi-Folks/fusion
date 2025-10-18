@@ -27,6 +27,7 @@
     "spatie/yaml-front-matter": "^2.0"
   },
   "require-dev": {
+    "larastan/larastan": "^3.0",
     "laravel/pint": "^1.13",
     "orchestra/testbench": "^10.6",
     "pestphp/pest": "^4.0",
@@ -51,8 +52,10 @@
     "style-ci": "vendor/bin/pint --test",
     "rector-ci": "vendor/bin/rector process --dry-run",
     "rector": "vendor/bin/rector process",
+    "static-code": "./vendor/bin/phpstan analyse",
     "all": [
         "@style-fix",
+        "@static-code",
         "@rector",
         "@test"
     ]

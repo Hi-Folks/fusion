@@ -51,7 +51,7 @@ class SyncModel extends GeneratorCommand
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(): ?bool
     {
         $this->output->title('Sync Model');
         $markdownPath = $this->option('path');
@@ -74,7 +74,8 @@ class SyncModel extends GeneratorCommand
         if (! is_dir($markdownPath)) {
             $this->error(sprintf('The Folder %s does not exist!', $markdownPath));
 
-            return Command::INVALID;
+            return false;
+            // return Command::INVALID;
         }
 
         $filesystem = new FileSystem;
@@ -142,7 +143,8 @@ class SyncModel extends GeneratorCommand
             parent::handle();
         }
 
-        return Command::SUCCESS;
+        // return Command::SUCCESS;
+        return true;
 
     }
 
