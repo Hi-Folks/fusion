@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.1 - WIP
+- Adding Static Code Analysis via PHPStan + Larastan (Level 5)
+
 ## 1.0.0 - 2025-10-17
 - Upgrading the support for Laravel 12
 - Adding check if content directory is present with the `php artisan fusion:check` command
