@@ -1,7 +1,9 @@
 # Changelog
 
 ## 1.0.1 - WIP
-- Adding Static Code Analysis via PHPStan + Larastan (Level 5)
+- Adding Static Code Analysis via PHPStan + Larastan (Level 6)
+- Adding env variable FUSION_CONTENT_DIRECTORY for setting the path of content folder (default is app/resources/content)
+- Adding tests for hydrated model
 
 ## 1.0.0 - 2025-10-17
 - Upgrading the support for Laravel 12

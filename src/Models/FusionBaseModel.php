@@ -2,11 +2,15 @@
 
 namespace HiFolks\Fusion\Models;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use League\CommonMark\Environment\Environment;
+use League\CommonMark\Exception\AlreadyInitializedException;
+use League\CommonMark\Exception\CommonMarkException;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
@@ -14,6 +18,7 @@ use League\CommonMark\MarkdownConverter;
 use Spatie\CommonMarkHighlighter\FencedCodeRenderer;
 use Spatie\CommonMarkHighlighter\IndentedCodeRenderer;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 abstract class FusionBaseModel extends Model
 {
@@ -21,13 +26,18 @@ abstract class FusionBaseModel extends Model
     {
 
         $folderName = str_replace(
-            'App\\Models\\',
+            ['App\\Models\\', 'HiFolks\\Fusion\\Models\\'],
             '',
             static::class
         );
         $folderName = Str::snake($folderName);
 
-        return 'content'.DIRECTORY_SEPARATOR.$folderName;
+        $resourceDirectory = resource_path('content'.DIRECTORY_SEPARATOR);
+        if (! is_null(config('fusion.content_directory'))) {
+            $resourceDirectory = __DIR__.'/../../'.config('fusion.content_directory');
+        }
+
+        return $resourceDirectory.$folderName;
     }
 
     public function getRouteKeyName()
@@ -35,6 +45,9 @@ abstract class FusionBaseModel extends Model
         return 'slug';
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function frontmatterFields(): array
     {
         return [
@@ -44,6 +57,8 @@ abstract class FusionBaseModel extends Model
 
     /**
      * Return the list of the field name managed by the base class
+     *
+     * @return array<int, string>
      */
     public static function frontmatterBaseFields(): array
     {
@@ -56,6 +71,15 @@ abstract class FusionBaseModel extends Model
         ];
     }
 
+    /**
+     * @return array<int, mixed>
+     *
+     * @throws AlreadyInitializedException
+     * @throws BindingResolutionException
+     * @throws FileNotFoundException
+     * @throws ParseException
+     * @throws CommonMarkException
+     */
     public function getRows(): array
     {
         return $this->getFrontmatterRows(
@@ -64,9 +88,10 @@ abstract class FusionBaseModel extends Model
     }
 
     /**
-     * @return non-empty-array[]
+     * @param  array<int, string>  $columns
+     * @return array<int, mixed>
      */
-    public function getFrontmatterRows($columns = []): array
+    public function getFrontmatterRows(array $columns = []): array
     {
 
         $environment = (new Environment)
@@ -81,7 +106,7 @@ abstract class FusionBaseModel extends Model
         $filesystem = new FileSystem;
         $markdowns = [];
 
-        foreach (File::allFiles(resource_path($this->getResourceFolder())) as $file) {
+        foreach (File::allFiles($this->getResourceFolder()) as $file) {
             // default slug as filename
             $slug = $file->getFilenameWithoutExtension();
 

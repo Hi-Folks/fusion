@@ -13,6 +13,7 @@
 
 uses(HiFolks\Fusion\Tests\TestCase::class)->in('Feature');
 uses(HiFolks\Fusion\Tests\TestCase::class)->in('Unit');
+uses(HiFolks\Fusion\Tests\TestCase::class)->in('Commands');
 
 /*
 |--------------------------------------------------------------------------
