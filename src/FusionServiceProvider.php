@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HiFolks\Fusion;
 
 use HiFolks\Fusion\Console\Commands\CheckMarkdown;
@@ -24,7 +26,7 @@ class FusionServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('fusion.php'),
+                __DIR__ . '/../config/config.php' => config_path('fusion.php'),
             ], 'config');
 
             // Publishing the views.
@@ -57,9 +59,9 @@ class FusionServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'fusion');
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'fusion');
 
         // Register the main class to use with the facade
-        $this->app->singleton('fusion', static fn (): \HiFolks\Fusion\Fusion => new Fusion);
+        $this->app->singleton('fusion', static fn(): \HiFolks\Fusion\Fusion => new Fusion());
     }
 }

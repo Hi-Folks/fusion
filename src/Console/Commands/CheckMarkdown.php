@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace HiFolks\Fusion\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -27,24 +29,24 @@ class CheckMarkdown extends Command
     {
 
         $this->output->title('Parsing the Markdown Files');
-        $filesystem = new FileSystem;
+        $filesystem = new FileSystem();
         $contentDirectory = $this->option('dir');
         if (is_null($contentDirectory)) {
             $contentDirectory = resource_path('content');
         }
 
         if (! is_dir($contentDirectory)) {
-            $this->warn(' The directory `'.$contentDirectory."` doesn't exist.");
+            $this->warn(' The directory `' . $contentDirectory . "` doesn't exist.");
             $this->newLine();
-            $this->info(' You should create the directory `'.$contentDirectory.'` and start creating Markdown files in that directory.');
+            $this->info(' You should create the directory `' . $contentDirectory . '` and start creating Markdown files in that directory.');
             $this->newLine();
             $this->output->listing(
                 [
-                    'Create the `'.$contentDirectory.'` directory;',
-                    'Create the content type directory, for example `'.$contentDirectory.'/article`',
+                    'Create the `' . $contentDirectory . '` directory;',
+                    'Create the content type directory, for example `' . $contentDirectory . '/article`',
                     'Create the Markdown files in the new directory;',
                     'Execute the `php artisan fusion:sync` command for generating the model.',
-                ]
+                ],
             );
 
             return Command::INVALID;
@@ -64,15 +66,15 @@ class CheckMarkdown extends Command
 
                 $object = YamlFrontMatter::parse($fileContent);
                 if ($extension == 'md') {
-                    $numberMarkdown++;
-                    $this->components->twoColumnDetail(' - '.$filename, implode('; ', array_keys($object->matter())));
+                    ++$numberMarkdown;
+                    $this->components->twoColumnDetail(' - ' . $filename, implode('; ', array_keys($object->matter())));
                 } else {
-                    $numberNoMarkdown++;
+                    ++$numberNoMarkdown;
                 }
             }
 
             if ($numberMarkdown === 0) {
-                $this->warn('No Markdown files in '.$directory);
+                $this->warn('No Markdown files in ' . $directory);
             }
 
             if ($numberNoMarkdown > 0) {
