@@ -26,7 +26,7 @@
     <php>
         <!-- Example: set environment variables -->
         <env name="APP_ENV" value="testing"/>
-        <env name="FUSION_CONTENT_DIRECTORY" value="tests/data/content/"/>
+        <env name="FUSION_CONTENT_DIRECTORY" value="tests/Data/content/"/>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
     </php>
