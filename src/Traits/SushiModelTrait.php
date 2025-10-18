@@ -6,7 +6,7 @@ namespace HiFolks\Fusion\Traits;
 
 use Sushi\Sushi;
 
-trait FusionModelTrait
+trait SushiModelTrait
 {
     use Sushi;
 
