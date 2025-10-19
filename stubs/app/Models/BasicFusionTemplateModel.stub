@@ -2,12 +2,12 @@
 
 namespace {{ namespace }};
 
-use HiFolks\Fusion\Traits\FusionModelTrait;
-use HiFolks\Fusion\Models\FusionBaseModel;
+use HiFolks\Fusion\Traits\FusionBaseModelTrait;
+use Illuminate\Database\Eloquent\Model;
 
-class {{ class }} extends FusionBaseModel
+class {{ class }} extends Model
 {
-    use FusionModelTrait;
+    use FusionBaseModelTrait;
 
     public function frontmatterFields(): array
     {

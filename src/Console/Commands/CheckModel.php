@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace HiFolks\Fusion\Console\Commands;
 
-use HiFolks\Fusion\Models\FusionBaseModel;
-use HiFolks\Fusion\Traits\SushiModelTrait;
+use HiFolks\Fusion\Traits\FusionBaseModelTrait;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 
+/** @package HiFolks\Fusion\Console\Commands */
 class CheckModel extends Command
 {
     /**
@@ -51,28 +52,28 @@ class CheckModel extends Command
             return Command::INVALID;
         }
 
-        if (is_subclass_of($model, FusionBaseModel::class)) {
+        if (is_subclass_of($model, Model::class)) {
             $this->components->twoColumnDetail(
                 '<info>' . $model . '</info>',
-                '<info>Extends correctly the class ' . FusionBaseModel::class . '</info>',
+                '<info>Extends correctly the class ' . Model::class . '</info>',
             );
 
         } else {
             $this->components->twoColumnDetail(
                 '<info>' . $model . '</info>',
-                '<error>Does not extend correctly the class ' . FusionBaseModel::class . '</error>',
+                '<error>Does not extend correctly the class ' . Model::class . '</error>',
             );
         }
 
-        if (trait_exists(SushiModelTrait::class) && in_array(SushiModelTrait::class, class_uses($model))) {
+        if (trait_exists(FusionBaseModelTrait::class) && in_array(FusionBaseModelTrait::class, class_uses($model))) {
             $this->components->twoColumnDetail(
                 '<info>' . $model . '</info>',
-                '<info>Uses correctly the trait ' . SushiModelTrait::class . '</info>',
+                '<info>Uses correctly the trait ' . FusionBaseModelTrait::class . '</info>',
             );
         } else {
             $this->components->twoColumnDetail(
                 '<info>' . $model . '</info>',
-                '<error>Does not use correctly the trait ' . SushiModelTrait::class . '</error>',
+                '<error>Does not use correctly the trait ' . FusionBaseModelTrait::class . '</error>',
             );
 
         }

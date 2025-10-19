@@ -80,11 +80,12 @@ You can fill the file in this way:
 
 namespace App\Models;
 
+use HiFolks\Fusion\Traits\FusionBaseModelTrait;
+use Illuminate\Database\Eloquent\Model;
 
-use HiFolks\Fusion\Models\FusionBaseModel;
-
-class Article extends FusionBaseModel
+class Article extends Model
 {
+    use FusionBaseModelTrait;
 
     public function frontmatterFields(): array
     {
@@ -285,7 +286,7 @@ php artisan fusion:check
 
 ### Using the Check Model command
 
-To inspect the Model file and check if it extends the right class and uses the proper Traits to be a Model compatible with Markdown files, you can use the `fusion:check-model` command:
+To inspect the Model file and check if it extends the right class  to be a Model compatible with Markdown files, you can use the `fusion:check-model` command:
 
 
 ```shell
@@ -301,7 +302,22 @@ App\Models\Article extends correctly the class HiFolks\Fusion\Models\FusionBaseM
 App\Models\Article uses HiFolks\Fusion\Traits\FusionModelTrait
 ```
 
+## Upgrading from version 0.* to 1.*
 
+With the version 1 we simplified and we reduced the requirements of a Model class.
+Now you can extend the classic Model sub class for Eloquent Models and just use the traits FusionBaseModelTrait for enabling the "hidrate" logic provided by Fusion.
+
+```php
+<?php
+namespace App\Models;
+use HiFolks\Fusion\Traits\FusionBaseModelTrait;
+use Illuminate\Database\Eloquent\Model;
+
+class Page extends Model
+{
+    use FusionBaseModelTrait;
+
+```
 ## Testing
 
 ```bash
