@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-namespace HiFolks\Fusion\Models;
+namespace HiFolks\Fusion\Traits;
 
-use HiFolks\Fusion\Traits\SushiModelTrait;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -21,15 +19,15 @@ use League\CommonMark\MarkdownConverter;
 use Spatie\CommonMarkHighlighter\FencedCodeRenderer;
 use Spatie\CommonMarkHighlighter\IndentedCodeRenderer;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
+use Sushi\Sushi;
 use Symfony\Component\Yaml\Exception\ParseException;
 
-abstract class FusionBaseModel extends Model
+trait FusionBaseModelTrait
 {
-    use SushiModelTrait;
+    use Sushi;
 
     public function getResourceFolder(): string
     {
-
         $folderName = str_replace(
             ['App\\Models\\', 'HiFolks\\Fusion\\Models\\'],
             '',
@@ -38,16 +36,21 @@ abstract class FusionBaseModel extends Model
         $folderName = Str::snake($folderName);
 
         $resourceDirectory = resource_path('content' . DIRECTORY_SEPARATOR);
-        if (! is_null(config('fusion.content_directory'))) {
+        if (!is_null(config('fusion.content_directory'))) {
             $resourceDirectory = __DIR__ . '/../../' . config('fusion.content_directory');
         }
 
         return $resourceDirectory . $folderName;
     }
 
-    public function getRouteKeyName()
+    public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function getTable()
+    {
+        return parent::getTable();
     }
 
     /**
@@ -98,26 +101,19 @@ abstract class FusionBaseModel extends Model
      */
     public function getFrontmatterRows(array $columns = []): array
     {
-
         $environment = (new Environment())
             ->addExtension(new CommonMarkCoreExtension());
 
-        // $environment->addExtension(new CommonMarkCoreExtension());
         $environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
         $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer());
 
         $converter = new MarkdownConverter($environment);
-
-        $filesystem = new FileSystem();
+        $filesystem = new Filesystem();
         $markdowns = [];
 
         foreach (File::allFiles($this->getResourceFolder()) as $file) {
-            // default slug as filename
             $slug = $file->getFilenameWithoutExtension();
-
-            $filename = $file->getRelativePathName();
             $fileContent = $filesystem->get($file->getRealPath());
-
             $object = YamlFrontMatter::parse($fileContent);
 
             if (array_key_exists('slug', $object->matter())) {
@@ -132,8 +128,8 @@ abstract class FusionBaseModel extends Model
             ];
 
             foreach ($columns as $column) {
-                $row[$column] = is_array($object->matter($column)) ? json_encode($object->matter($column)) : $object->matter($column);
-
+                $value = $object->matter($column);
+                $row[$column] = is_array($value) ? json_encode($value) : $value;
             }
 
             $markdowns[] = $row;
