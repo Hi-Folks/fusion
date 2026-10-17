@@ -33,9 +33,7 @@ class CheckModel extends Command
 
         $this->output->title('Parsing the Model File');
         $model = $this->option('model');
-        if (is_null($model)) {
-            $model = 'App\Models\Article';
-        }
+        $model ??= 'App\Models\Article';
 
         if (class_exists($model)) {
             $this->components->twoColumnDetail(

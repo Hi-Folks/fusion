@@ -6,5 +6,5 @@ declare(strict_types=1);
  * You can place your custom package configuration in here.
  */
 return [
-    'content_directory' => env('FUSION_CONTENT_DIRECTORY', null),
+    'content_directory' => env('FUSION_CONTENT_DIRECTORY'),
 ];

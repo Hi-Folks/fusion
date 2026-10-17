@@ -59,9 +59,7 @@ class SyncModel extends GeneratorCommand
         $markdownPath = $this->option('path');
         $createModel = $this->option('create-model');
 
-        if (is_null($markdownPath)) {
-            $markdownPath = resource_path('content/article');
-        }
+        $markdownPath ??= resource_path('content/article');
 
         $this->components->twoColumnDetail(
             'Parsing the Markdown Directory',

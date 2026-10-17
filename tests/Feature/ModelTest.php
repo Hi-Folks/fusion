@@ -12,6 +12,15 @@ test('Model all() method', function () {
     expect($pages->get(1)->body)->toContain('Page 2');
 });
 
+test('Model highlights fenced code blocks', function () {
+    $page = Page::where('title', 'Page Title 1')->firstOrFail();
+
+    expect($page->body)
+        ->toContain('<pre data-lang="php" class="notranslate">')
+        ->toContain('<span class="hl-keyword">&lt;?php</span>')
+        ->toContain('<span class="hl-keyword">echo</span>');
+});
+
 test('Model where() method', function () {
     $pages = Page::where('title', 'Page Title 2')->get();
     expect($pages->count())->toBe(1);

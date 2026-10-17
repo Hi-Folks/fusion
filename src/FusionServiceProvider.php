@@ -6,6 +6,7 @@ namespace HiFolks\Fusion;
 
 use HiFolks\Fusion\Console\Commands\CheckMarkdown;
 use HiFolks\Fusion\Console\Commands\CheckModel;
+use HiFolks\Fusion\Console\Commands\StartCommand;
 use HiFolks\Fusion\Console\Commands\SyncModel;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,9 +26,14 @@ class FusionServiceProvider extends ServiceProvider
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
         if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__ . '/../config/config.php' => config_path('fusion.php'),
-            ], 'config');
+            $this->publishes(
+                [
+                    __DIR__ . "/../config/config.php" => config_path(
+                        "fusion.php",
+                    ),
+                ],
+                "config",
+            );
 
             // Publishing the views.
             /*$this->publishes([
@@ -49,6 +55,7 @@ class FusionServiceProvider extends ServiceProvider
                 CheckMarkdown::class,
                 CheckModel::class,
                 SyncModel::class,
+                StartCommand::class,
             ]);
         }
     }
@@ -59,9 +66,12 @@ class FusionServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'fusion');
+        $this->mergeConfigFrom(__DIR__ . "/../config/config.php", "fusion");
 
         // Register the main class to use with the facade
-        $this->app->singleton('fusion', static fn(): \HiFolks\Fusion\Fusion => new Fusion());
+        $this->app->singleton(
+            "fusion",
+            static fn(): \HiFolks\Fusion\Fusion => new Fusion(),
+        );
     }
 }

@@ -49,6 +49,20 @@ composer require hi-folks/fusion
 Once you installed Fusion you can start the process of creating content in Markdown files and querying the files through the Models.
 For example, now we are going to create articles in Markdown format and we will parse and query them like you can do it with a database.
 
+To inspect your content directory and get guidance for the next step, run:
+
+```shell
+php artisan fusion:start
+```
+
+By default, Fusion uses `resources/content`. You can inspect a different directory with the `--dir` option:
+
+```shell
+php artisan fusion:start --dir=path/to/content
+```
+
+If the directory does not exist, the command can create it for you. It then reports the available content types and Markdown files and suggests the relevant check or model-generation command.
+
 ### Creating the content
 In the `resources/content` directory, you can create the `article` directory.
 In the `resources/content/article`, you can create your Markdown files with a frontmatter header like for example:
@@ -349,6 +363,7 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 We built this Open Source project using some nice and powerful Open Source libraries like:
 - [Sushi](https://github.com/calebporzio/sushi): Eloquent's missing "array" driver;
 - [league/commonmark](https://github.com/thephpleague/commonmark): Highly-extensible PHP Markdown parser which fully supports the CommonMark and GFM specs;
+- [Tempest Highlight](https://github.com/tempestphp/highlight): Fast, extensible, server-side syntax highlighting;
 - [yaml-front-matter](https://github.com/spatie/yaml-front-matter): A to the point yaml front matter parser;
 - [PestPHP](https://github.com/pestphp/pest): Pest is an elegant PHP testing Framework with a focus on simplicity, meticulously designed to bring back the joy of testing in PHP. Under the hood PestPHP uses [PHPUnit, the PHP testing framework](https://phpunit.de);
 - [RectorPHP](https://github.com/rectorphp/rector): Instant Upgrades and Automated Refactoring of any PHP 5.3+ code;
