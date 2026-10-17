@@ -98,7 +98,7 @@ trait FusionBaseModelTrait
      */
     public function getFrontmatterRows(array $columns = []): array
     {
-        $environment = (new Environment())
+        $environment = new Environment()
             ->addExtension(new CommonMarkCoreExtension())
             ->addExtension(new HighlightExtension());
 

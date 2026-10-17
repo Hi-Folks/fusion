@@ -10,7 +10,7 @@ return RectorConfig::configure()
         __DIR__ . '/src',
     ])
     ->withPhpSets(
-        php83: true,
+        php84: true,
     )
     ->withPreparedSets(
         deadCode: true,

@@ -4,7 +4,7 @@
 - Added the interactive `php artisan fusion:start` command to create or inspect the content directory and guide users through the next setup steps
 - Added support for selecting the content directory with the `--dir` option
 - Improved command output and content-directory handling
-- Added support for Laravel 13 and PHP 8.5
+- Added support for Laravel 13 and PHP 8.4–8.5
 - Replaced the abandoned `spatie/commonmark-highlighter` package with `tempest/highlight`
 
 ## 1.1.0 - 2025-10-19

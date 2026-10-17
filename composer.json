@@ -19,7 +19,7 @@
     }
   ],
   "require": {
-    "php": "^8.3",
+    "php": "^8.4",
     "calebporzio/sushi": "^2.5",
     "illuminate/support": "^13.0",
     "league/commonmark": "^2.4",
