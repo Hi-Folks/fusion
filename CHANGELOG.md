@@ -4,6 +4,10 @@
 - Added caching for parsed Markdown content rows using Laravel's configured cache store
 - Added configurable cache lifetime via `FUSION_CACHE_TTL` (defaults to one hour)
 - Documented cache behavior, invalidation, and configuration in the README
+- Added opt-in deep Markdown validation and JSON output to `fusion:check`, with concise validation reports and `--include-valid` for full listings
+- Fixed `fusion:check-model` to return a failure status when a model is incompatible with Fusion
+- Changed `fusion:check-model` without `--model` to list classes discovered under `app/Models`
+- Added `--dir` to `fusion:check-model` to scan a custom model directory
 
 ## 1.2.0 - 2026-10-17
 - Added the interactive `php artisan fusion:start` command to create or inspect the content directory and guide users through the next setup steps

@@ -106,7 +106,7 @@ composer require hi-folks/fusion
 Once you installed Fusion you can start the process of creating content in Markdown files and querying the files through the Models.
 For example, now we are going to create articles in Markdown format and we will parse and query them like you can do it with a database.
 
-To inspect your content directory and get guidance for the next step, run:
+Use `fusion:start` when setting up Fusion or inspecting a content directory; it shows what content is present and suggests the next command to run:
 
 ```shell
 php artisan fusion:start
@@ -169,12 +169,12 @@ class Article extends Model
 
 ```
 Consider that:
-- the class has to extend the FusionBaseModel with `extends FusionBaseModel`;
+- the class has to extend Laravel's Eloquent `Model` and use `FusionBaseModelTrait`;
 - you have to implement the `frontmatterFields()` function for returning the list of the field names used in the frontmatter header.
 
 ### Creating automatically the Model
 
-If you want to create automatically the Model file, based on the structure and the content of the Markdown files you can use the `fusion:sync-model` command:
+Use `fusion:sync-model` when you want a starter Eloquent model generated from the content directory and its discovered Frontmatter fields, rather than writing the model boilerplate by hand:
 
 ```shell
 php artisan fusion:sync-model --path=resources/content/article --create-model
@@ -365,28 +365,82 @@ Fusion aids in website development by integrating the power of Markdown and Fron
 
 ### Using the Check Markdown command
 
-To inspect the Markdown files and show and list the Frontmatter fields you can use the Artisan command `fusion:check`.
+Use `fusion:check` to see which Frontmatter fields are present in your Markdown files before defining or debugging a model. By default, it gives a quick inventory:
 
 ```shell
 php artisan fusion:check
 ```
 
+For a deeper check, use `--validate`. Fusion will also render each Markdown body using its Markdown and syntax-highlighting extensions. This takes more work than the default inventory and is useful when checking content in CI:
+
+```shell
+php artisan fusion:check --validate
+```
+
+Deep validation reports frontmatter parsing and Markdown rendering errors. It does not enforce required fields or field types, since those rules are application-specific and Fusion does not define a content schema.
+
+For CI scripts and AI agents, add `--format=json`. JSON mode emits only the report, with a summary and findings. When `--validate` is used, the report lists invalid files by default instead of repeating every successful file. Use `--include-valid` to include valid file records as well. Without `--validate`, JSON mode continues to list every inspected file and its Frontmatter fields. Errors produce a non-zero exit code.
+
+```shell
+php artisan fusion:check --validate --format=json
+```
+
+To include valid files in that validation report:
+
+```shell
+php artisan fusion:check --validate --include-valid --format=json
+```
+
+The report includes a status (`ok` or `failed`), per-file Frontmatter fields, and findings with a severity, rule, and message. For example:
+
+```json
+{
+  "status": "failed",
+  "summary": { "files": 1, "valid": 0, "invalid": 1, "errors": 1, "warnings": 0 },
+  "files": [
+    { "file": "article/example.md", "fields": [], "valid": false }
+  ],
+  "findings": [
+    {
+      "file": "article/example.md",
+      "severity": "error",
+      "rule": "frontmatter.parse",
+      "message": "Frontmatter could not be parsed."
+    }
+  ]
+}
+```
+
 ### Using the Check Model command
 
-To inspect the Model file and check if it extends the right class  to be a Model compatible with Markdown files, you can use the `fusion:check-model` command:
+Use `fusion:check-model` to find the model class to use and catch setup issues before querying content. Without options, it lists classes discovered under `app/Models` and shows whether each is Fusion-compatible:
+
+```shell
+php artisan fusion:check-model
+```
+
+To scan a different model directory, pass it with `--dir`. Fusion reads the namespace declared in each PHP file, so the classes must be autoloadable by your application:
+
+```shell
+php artisan fusion:check-model --dir=app/Domain/Models
+```
+
+To check a specific class, pass its fully qualified name with `--model`:
 
 
 ```shell
 php artisan fusion:check-model --model="App\Models\Article"
 ```
 
-The output will tell you if your model is correct or not:
+The specific-model check verifies that the class exists, extends Eloquent's `Model`, and uses `FusionBaseModelTrait`. It exits with a non-zero status if any check fails, so it can also be used in scripts and CI.
+
+For a correctly configured model, the output looks like this:
 
 ```text
-Parsing the Model File
-Class App\Models\Article exists
-App\Models\Article extends correctly the class HiFolks\Fusion\Models\FusionBaseModel
-App\Models\Article uses HiFolks\Fusion\Traits\FusionModelTrait
+Checking the Model
+App\Models\Article Exists
+App\Models\Article Extends correctly the class Illuminate\Database\Eloquent\Model
+App\Models\Article Uses correctly the trait HiFolks\Fusion\Traits\FusionBaseModelTrait
 ```
 
 ## Upgrading from version 0.* to 1.*
