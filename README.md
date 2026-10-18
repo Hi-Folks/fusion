@@ -385,6 +385,25 @@ For CI scripts and AI agents, add `--format=json`. JSON mode emits only the repo
 php artisan fusion:check --validate --format=json
 ```
 
+To run deep validation on every pull request, add a step like this to your GitHub Actions workflow after installing your application's Composer dependencies. The command exits with a non-zero status when it finds invalid Markdown, so GitHub Actions will fail the job:
+
+```yaml
+name: Validate Markdown
+
+on: [pull_request]
+
+jobs:
+  validate-markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - run: composer install --no-progress --prefer-dist
+      - run: php artisan fusion:check --validate --format=json
+```
+
 To include valid files in that validation report:
 
 ```shell
