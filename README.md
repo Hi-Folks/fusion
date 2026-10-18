@@ -214,18 +214,15 @@ To keep the cached content in sync with your files, Fusion fingerprints the cont
 This cache is most useful when loading a content set repeatedly, especially when parsing and rendering many Markdown files. The actual improvement depends on the size and complexity of your content and the cache store in use; the fingerprinting work means a cache hit is not a zero-cost lookup.
 
 ## Advanced Usage
-Once you understand the basics of using Fusion with your Markdown files, you can use some of the advanced features. Consider that Fusion is a LAravel Package and during the design and the implementation of the Package we try to use and adhere to as much as possible the Laravel functionalities.
-With this approach, we think that we can inherit all the benefits of some Laravel features.
-Some of these feature that we explore and explain in the next sections are:
+Fusion integrates with Laravel's existing features. The following sections show how to use them with Markdown content:
 
-- Reloading the page of the website you are visualizing in the Browser when you change the Markdown content;
-- Casting date in the Model so you can use the date in the Frontmatter headers;
-- Casting collection in the Model so you can use complex and nested Frontmatter headers;
-- Using the Check Markdown command for detecting the Frontmatter fields in the Markdown files.
+- Refreshing the browser when Markdown content changes during development;
+- Casting Frontmatter dates and structured values on Eloquent models;
+- Inspecting Frontmatter fields with the `fusion:check` command.
 
-### Adding real-time page reload
-If you want the browser to automatically reload the pages when you change some content in the Markdown files you can set the `refresh` option in the `laravel` Vite plugin.
-In the `vite.config.js` file add the `refresh` option with the list of the folder you want that Vite will "watch" for changes and reload the page.
+### Refreshing the page when Markdown changes
+
+Laravel's Vite plugin can trigger a full-page browser refresh when a watched file changes. This happens during development while the Vite dev server is running with `npm run dev`; it is not a production feature. Add a `refresh` path in `vite.config.js` for the directory containing your Markdown files:
 
 ```js
 import { defineConfig } from 'vite';
@@ -234,109 +231,96 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ["resources/css/app.css", "resources/js/app.js"],
+            input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: [
                 {
-                    paths: ["resources/content/**"],
+                    paths: ['resources/content/**'],
                 },
             ],
         }),
-    ]
+    ],
 });
 ```
 
-In the example, the `resources/content` directory is added.
+The `paths` are relative to your project root. This example watches `resources/content`; if you configured Fusion to use a different content directory, update the path to match it.
 
-> If you need to set up Vite asset bundling, see the [Laravel 12 Vite documentation](https://laravel.com/docs/12.x/vite).
+> If you need to set up Vite asset bundling, see the [Laravel 13 Vite documentation](https://laravel.com/docs/13.x/vite).
 
-### Using dates in the Markdown files
+### Casting frontmatter values
 
-If you want to use date (or date-time) in your front matter you can use the format YYYY-MM-DD in the Frontmatter for example:
+Fusion models are Eloquent models, so you can use Laravel's normal attribute casts to get convenient PHP values when reading Frontmatter fields. Fusion does not infer a field's type: declare the field in `frontmatterFields()` and add the corresponding cast to your model's `casts()` method.
 
-```markdown
----
-date: 2023-01-26
-title: Example title for article 1
----
-This is the **Markdown**.
-```
+### Casting dates
 
-Then in the Model you can set the casting in this way:
-
-```php
-    protected function casts(): array
-    {
-        return [
-            'date' => 'datetime:Y-m-d',
-        ];
-    }
-```
-
-Where `date` is the field name, the same name you are using in the Markdown.
-
-If you are adding a new field, remember to add the field name in the list of the frontmatter field in the `frontmatterFields()` function in the Model:
-
-```php
-    public function frontmatterFields(): array
-    {
-        return [
-            "title", "date", "excerpt", "published", "highlight", "head"
-        ];
-    }
-```
-
-
-
-> If you are interested into exploring more the attribute casting in the Laravel Model you can take a look at [The Laravel Eloquent attribute casting documentation](https://laravel.com/docs/11.x/eloquent-mutators#attribute-casting).
-
-### Using collections in the Markdown files
-
-If you need to manage complex data in the Markdown, like for example a list of tags you can use the arrays in the Frontmatter:
+Add the date to the Markdown Frontmatter, using a format such as `YYYY-MM-DD`:
 
 ```markdown
 ---
 date: 2023-01-26
-title: Example title for article 1
-excerpt: This will be a short excerpt from article number 1.
-published: true
-highlight: true
+title: Example article
+---
+```
+
+Declare `date` in `frontmatterFields()` and cast it in the model:
+
+```php
+public function frontmatterFields(): array
+{
+    return ['title', 'date'];
+}
+
+protected function casts(): array
+{
+    return [
+        'date' => 'date:Y-m-d',
+    ];
+}
+```
+
+When you read `$article->date`, Laravel returns a Carbon instance. The `:Y-m-d` suffix controls how the value is serialized to an array or JSON; to format it in a Blade view, use `{{ $article->date->format('Y-m-d') }}`. For Frontmatter values that include a time, use the `datetime` or `immutable_datetime` cast instead.
+
+### Casting nested frontmatter as a collection
+
+For structured values such as a list of tags or metadata, use a YAML array in the Frontmatter:
+
+```markdown
+---
+title: Example article
 head:
   - tag: title
     content: Custom about title
   - tag: title2
     content: Custom about title2
 ---
-
-# Article 1
-
-Markdown goes here
 ```
 
-In the example, we are adding a field named `head` which is an array of values for tag and content.
-
-In the Model file, you have to cast properly the `head` field as `collection`.
+Add `head` to `frontmatterFields()` and cast it as a collection:
 
 ```php
-    protected function casts(): array
-    {
-        return [
-            'head' => 'collection',
-            'date' => 'datetime:Y-m-d',
-        ];
-    }
+public function frontmatterFields(): array
+{
+    return ['title', 'head'];
+}
+
+protected function casts(): array
+{
+    return [
+        'head' => 'collection',
+    ];
+}
 ```
 
-So that in your blade files, you can loop through the `head` field and access to `tag` or `content` sub-fields:
+Now `$article->head` is an `Illuminate\Support\Collection`; each item is an array. In a Blade view, loop through it and access its fields:
 
-```php
-@if (! is_null($article->head))
-    @foreach ($article->head as $headItems)
-    <div class="mx-3 px-8 badge badge-neutral">{{ $headItems["tag"] }}</div>
-    @endforeach
-@else
-    <div class="mx-3 px-8 badge badge-ghost">No Tag</div>
-@endif
+```blade
+@foreach ($article->head as $item)
+    <div>{{ $item['tag'] }}: {{ $item['content'] }}</div>
+@endforeach
 ```
+
+In both examples, the field names in `casts()` must match the Markdown Frontmatter and be included in `frontmatterFields()`. Fusion encodes Frontmatter arrays for its in-memory model, and Laravel applies the declared casts when you access the Eloquent attributes. Casts affect attribute access; they do not add type or required-field validation to `fusion:check`.
+
+For more cast types and options, see [Laravel's Eloquent attribute casting documentation](https://laravel.com/docs/13.x/eloquent-mutators#attribute-casting).
 
 ### Customizing the slug
 
