@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1 - 2026-10-18
+- Added caching for parsed Markdown content rows using Laravel's configured cache store
+- Added configurable cache lifetime via `FUSION_CACHE_TTL` (defaults to one hour)
+- Documented cache behavior, invalidation, and configuration in the README
+
 ## 1.2.0 - 2026-10-17
 - Added the interactive `php artisan fusion:start` command to create or inspect the content directory and guide users through the next setup steps
 - Added support for selecting the content directory with the `--dir` option

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HiFolks\Fusion\Traits;
 
+use HiFolks\Fusion\ContentCache;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
@@ -97,6 +98,25 @@ trait FusionBaseModelTrait
      * @return array<int, mixed>
      */
     public function getFrontmatterRows(array $columns = []): array
+    {
+        return app(ContentCache::class)->rememberRows(
+            static::class,
+            $this->getResourceFolder(),
+            $columns,
+            fn(): array => $this->resolveFrontmatterRows($columns),
+        );
+    }
+
+    /**
+     * @param  array<int, string>  $columns
+     * @return array<int, mixed>
+     *
+     * @throws BindingResolutionException
+     * @throws FileNotFoundException
+     * @throws ParseException
+     * @throws CommonMarkException
+     */
+    private function resolveFrontmatterRows(array $columns): array
     {
         $environment = new Environment()
             ->addExtension(new CommonMarkCoreExtension())

@@ -197,6 +197,22 @@ $articles = \App\Models\Article
     ->get();
 ```
 
+### Content caching
+
+Fusion caches the rows it builds from Markdown files. This includes parsed frontmatter fields and the rendered HTML body, along with the file paths used by the model. The cache is used while Fusion loads the model's content rows; it does not cache the results of Eloquent queries.
+
+Fusion uses Laravel's configured default cache store, so the cache backend follows your application's normal `config/cache.php` settings. Cached rows expire after one hour by default. You can change the lifetime in seconds with the `cache_ttl` option in `config/fusion.php` or the `FUSION_CACHE_TTL` environment variable:
+
+```dotenv
+FUSION_CACHE_TTL=7200
+```
+
+This example keeps cached rows for two hours.
+
+To keep the cached content in sync with your files, Fusion fingerprints the content directory on each row-cache lookup. Adding, removing, renaming, or editing a file produces a different cache key, so Fusion resolves the rows again. A warm cache avoids reparsing frontmatter and converting/highlighting Markdown, but it still scans and hashes the files. Eloquent filtering and sorting, such as `where()` and `orderBy()`, also still run normally and are not cached by Fusion.
+
+This cache is most useful when loading a content set repeatedly, especially when parsing and rendering many Markdown files. The actual improvement depends on the size and complexity of your content and the cache store in use; the fingerprinting work means a cache hit is not a zero-cost lookup.
+
 ## Advanced Usage
 Once you understand the basics of using Fusion with your Markdown files, you can use some of the advanced features. Consider that Fusion is a LAravel Package and during the design and the implementation of the Package we try to use and adhere to as much as possible the Laravel functionalities.
 With this approach, we think that we can inherit all the benefits of some Laravel features.

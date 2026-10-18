@@ -8,6 +8,7 @@ use HiFolks\Fusion\Console\Commands\CheckMarkdown;
 use HiFolks\Fusion\Console\Commands\CheckModel;
 use HiFolks\Fusion\Console\Commands\StartCommand;
 use HiFolks\Fusion\Console\Commands\SyncModel;
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\ServiceProvider;
 
 class FusionServiceProvider extends ServiceProvider
@@ -72,6 +73,15 @@ class FusionServiceProvider extends ServiceProvider
         $this->app->singleton(
             "fusion",
             static fn(): \HiFolks\Fusion\Fusion => new Fusion(),
+        );
+
+        // Resolve the cache repository selected by the Laravel cache configuration.
+        $this->app->singleton(
+            ContentCache::class,
+            static fn($app): ContentCache => new ContentCache(
+                $app->make(Repository::class),
+                (int) $app['config']->get('fusion.cache_ttl', 3600),
+            ),
         );
     }
 }
