@@ -410,6 +410,14 @@ To include valid files in that validation report:
 php artisan fusion:check --validate --include-valid --format=json
 ```
 
+To limit a check to Markdown files Git currently reports as modified, staged, or untracked, add `--changed`:
+
+```shell
+php artisan fusion:check --validate --changed --format=json
+```
+
+This is useful during local development when you only want to inspect your current changes. Deleted files are skipped. It uses the working tree status, so it does not select files based on commits in a pull request; CI jobs that need branch-based filtering should provide that comparison separately.
+
 The report includes a status (`ok` or `failed`), per-file Frontmatter fields, and findings with a severity, rule, and message. For example:
 
 ```json

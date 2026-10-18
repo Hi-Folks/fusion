@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Process;
 
 function createCheckMarkdownFixture(string $contents): string
 {
@@ -21,6 +22,18 @@ function removeCheckMarkdownFixture(string $root): void
     }
 
     rmdir($root);
+}
+
+function initializeCheckMarkdownGitRepository(string $root): void
+{
+    foreach ([
+        ['git', 'init', '-q'],
+        ['git', 'add', '.'],
+        ['git', '-c', 'user.name=Fusion Tests', '-c', 'user.email=fusion@example.test', 'commit', '-qm', 'Initial content'],
+    ] as $command) {
+        $result = Process::path($root)->run($command);
+        expect($result->successful())->toBeTrue($result->errorOutput());
+    }
 }
 
 test('check command emits machine-readable json without table output', function () {
@@ -84,6 +97,58 @@ test('deep validation renders markdown and returns success for valid content', f
 
         expect($exitCode)->toBe(0)
             ->and($report['files'][0]['fields'])->toBe(['title']);
+    } finally {
+        removeCheckMarkdownFixture($root);
+    }
+});
+
+test('changed mode validates modified and untracked markdown files only', function () {
+    $root = createCheckMarkdownFixture("---\ntitle: Original page\n---\n# Body\n");
+    file_put_contents($root . '/article/unchanged.md', "---\ntitle: Unchanged page\n---\n# Body\n");
+    initializeCheckMarkdownGitRepository($root);
+
+    file_put_contents($root . '/article/page.md', "---\ntitle: [broken\n---\n# Body\n");
+    $stageResult = Process::path($root)->run(['git', 'add', 'article/page.md']);
+    expect($stageResult->successful())->toBeTrue($stageResult->errorOutput());
+    file_put_contents($root . '/article/added.md', "---\ntitle: Added page\n---\n# Body\n");
+    unlink($root . '/article/unchanged.md');
+
+    try {
+        $exitCode = Artisan::call('fusion:check', [
+            '--dir' => $root,
+            '--validate' => true,
+            '--changed' => true,
+            '--include-valid' => true,
+            '--format' => 'json',
+        ]);
+        $report = json_decode(Artisan::output(), true, flags: JSON_THROW_ON_ERROR);
+        $reportedFiles = array_column($report['files'], 'file');
+
+        expect($exitCode)->toBe(1)
+            ->and($report['summary']['files'])->toBe(2)
+            ->and($report['summary']['invalid'])->toBe(1)
+            ->and($reportedFiles)->toBe(['article/added.md', 'article/page.md'])
+            ->and($report['findings'][0]['file'])->toBe('article/page.md')
+            ->and($report['findings'][0]['rule'])->toBe('frontmatter.parse');
+    } finally {
+        removeCheckMarkdownFixture($root);
+    }
+});
+
+test('changed mode reports an error when the content directory is not in a git repository', function () {
+    $root = createCheckMarkdownFixture("---\ntitle: Page\n---\n# Body\n");
+
+    try {
+        $exitCode = Artisan::call('fusion:check', [
+            '--dir' => $root,
+            '--changed' => true,
+            '--format' => 'json',
+        ]);
+        $report = json_decode(Artisan::output(), true, flags: JSON_THROW_ON_ERROR);
+
+        expect($exitCode)->toBe(2)
+            ->and($report['status'])->toBe('failed')
+            ->and($report['findings'][0]['rule'])->toBe('git.changed_files_unavailable');
     } finally {
         removeCheckMarkdownFixture($root);
     }
