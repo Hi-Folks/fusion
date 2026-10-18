@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2 - WIP
+- Added `--changed` to `fusion:check` to inspect modified, staged, and untracked Markdown files reported by Git
+- Documented changed-file checking and its working-tree scope in the README
+
 ## 1.2.1 - 2026-10-18
 - Added caching for parsed Markdown content rows using Laravel's configured cache store
 - Added configurable cache lifetime via `FUSION_CACHE_TTL` (defaults to one hour)

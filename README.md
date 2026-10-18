@@ -247,7 +247,7 @@ export default defineConfig({
 
 In the example, the `resources/content` directory is added.
 
-> If you need to setup the Vite asset bundling you can take a look at the LAravel documentation: https://laravel.com/docs/11.x/vite
+> If you need to set up Vite asset bundling, see the [Laravel 12 Vite documentation](https://laravel.com/docs/12.x/vite).
 
 ### Using dates in the Markdown files
 
