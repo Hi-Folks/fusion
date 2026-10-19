@@ -29,7 +29,7 @@
 </p>
 
 <p align="center">
-    <img src="https://repository-images.githubusercontent.com/781827813/6cd3b16b-b318-4f90-8a03-77bbded91c02" alt="Laravel package that enhances Eloquent models to facilitate the management of structured, database-free content through Markdown files with Frontmatter.">
+    <img src="https://repository-images.githubusercontent.com/781827813/4b0e855d-4935-42d0-83d4-49cfa453b421" alt="Laravel package that enhances Eloquent models to facilitate the management of structured, database-free content through Markdown files with Frontmatter.">
 </p>
 
 ## Why Fusion?
@@ -256,7 +256,7 @@ Add the date to the Markdown Frontmatter, using a format such as `YYYY-MM-DD`:
 
 ```markdown
 ---
-date: 2023-01-26
+date: "2023-01-26"
 title: Example article
 ---
 ```
@@ -361,7 +361,31 @@ For a deeper check, use `--validate`. Fusion will also render each Markdown body
 php artisan fusion:check --validate
 ```
 
-Deep validation reports frontmatter parsing and Markdown rendering errors. It does not enforce required fields or field types, since those rules are application-specific and Fusion does not define a content schema.
+Deep validation reports Frontmatter parsing and Markdown rendering errors. To also check whether Frontmatter conforms to your application's content schema—for example, whether required fields are present or values have the expected type—pass a Fusion model with `--model`. This is useful for checking editorial content before publishing or catching invalid content in CI. Without `--model`, Fusion does not enforce required fields or field types because those rules are application-specific.
+
+Define a public `frontmatterRules()` method on the model and return standard Laravel validation rules:
+
+```php
+public function frontmatterRules(): array
+{
+    return [
+        'title' => ['required', 'string', 'max:255'],
+        'date' => ['required', 'date'],
+        'tags' => ['sometimes', 'array'],
+        'tags.*' => ['string'],
+    ];
+}
+```
+
+Quote date values in YAML when you want Laravel's `date` rule to validate them as date strings (for example, `date: "2026-10-19"`). Unquoted YAML date scalars may be parsed as timestamps before validation.
+
+Then pass that model to the deep check:
+
+```shell
+php artisan fusion:check --validate --model="App\Models\Article" --format=json
+```
+
+Fusion parses each Markdown file's Frontmatter and passes the resulting data and the model's rules to Laravel's `Validator`. Validation messages are reported against the file that failed, and any validation error produces a non-zero exit code. The `frontmatterRules()` method is a Fusion convention for supplying rules; Laravel provides the validation engine and rule syntax. This is separate from Eloquent casts: casts transform values when you access model attributes, while validation rules check the parsed Frontmatter values. Database-backed rules such as `unique` can be used too, but may query the database for each file.
 
 For CI scripts and AI agents, add `--format=json`. JSON mode emits only the report, with a summary and findings. When `--validate` is used, the report lists invalid files by default instead of repeating every successful file. Use `--include-valid` to include valid file records as well. Without `--validate`, JSON mode continues to list every inspected file and its Frontmatter fields. Errors produce a non-zero exit code.
 

@@ -11,7 +11,7 @@ function temporaryContentPath(string $suffix): string
 test('Start command inspects an existing content directory', function () {
     $contentDirectory = temporaryContentPath('existing');
     File::ensureDirectoryExists($contentDirectory . '/article');
-    File::put($contentDirectory . '/article/hello.md', "---\ntitle: Hello\n---\n");
+    copyTestDataFile('content/article/article-1.md', $contentDirectory . '/article/hello.md');
 
     try {
         $this->artisan('fusion:start', ['--dir' => $contentDirectory])

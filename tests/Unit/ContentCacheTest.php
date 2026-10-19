@@ -6,27 +6,14 @@ use Illuminate\Support\Facades\Cache;
 
 function contentCacheFixture(): string
 {
-    $directory = sys_get_temp_dir() . '/fusion-content-cache-' . bin2hex(random_bytes(8));
-    mkdir($directory);
+    $directory = createTemporaryTestDirectory('fusion-content-cache');
+    copyTestDataFile('markdown/cache-page.md', $directory . '/page.md');
 
     return $directory;
 }
 
-function removeContentCacheFixture(string $directory): void
-{
-    foreach (new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::CHILD_FIRST,
-    ) as $file) {
-        $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
-    }
-
-    rmdir($directory);
-}
-
 test('it reuses resolved rows while the content is unchanged', function () {
     $directory = contentCacheFixture();
-    file_put_contents($directory . '/page.md', "---\ntitle: First\n---\nBody");
     $cache = new ContentCache(Cache::store('array'));
     $resolutions = 0;
 
@@ -43,14 +30,13 @@ test('it reuses resolved rows while the content is unchanged', function () {
         expect($first)->toBe($second)
             ->and($resolutions)->toBe(1);
     } finally {
-        removeContentCacheFixture($directory);
+        removeTemporaryTestDirectory($directory);
     }
 });
 
 test('it resolves rows again when content changes', function () {
     $directory = contentCacheFixture();
     $file = $directory . '/page.md';
-    file_put_contents($file, "---\ntitle: First\n---\nBody");
     $cache = new ContentCache(Cache::store('array'));
     $resolutions = 0;
 
@@ -62,19 +48,18 @@ test('it resolves rows again when content changes', function () {
 
     try {
         $first = $cache->rememberRows('Page', $directory, ['title'], $resolveRows);
-        file_put_contents($file, "---\ntitle: Updated\n---\nBody");
+        copyTestDataFile('markdown/cache-page-updated.md', $file);
         $second = $cache->rememberRows('Page', $directory, ['title'], $resolveRows);
 
         expect($first)->not->toBe($second)
             ->and($resolutions)->toBe(2);
     } finally {
-        removeContentCacheFixture($directory);
+        removeTemporaryTestDirectory($directory);
     }
 });
 
 test('it uses the configured ttl for cached rows', function () {
     $directory = contentCacheFixture();
-    file_put_contents($directory . '/page.md', "---\ntitle: First\n---\nBody");
     $repository = Mockery::mock(Repository::class);
     $repository->shouldReceive('remember')
         ->once()
@@ -86,7 +71,7 @@ test('it uses the configured ttl for cached rows', function () {
         expect($cache->rememberRows('Page', $directory, ['title'], fn(): array => []))
             ->toBe([['title' => 'First']]);
     } finally {
-        removeContentCacheFixture($directory);
+        removeTemporaryTestDirectory($directory);
     }
 });
 

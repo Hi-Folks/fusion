@@ -2,7 +2,9 @@
 
 ## 1.2.2 - WIP
 - Added `--changed` to `fusion:check` to inspect modified, staged, and untracked Markdown files reported by Git
+- Added opt-in Frontmatter validation to `fusion:check` using Laravel validation rules defined by a Fusion model
 - Documented changed-file checking and its working-tree scope in the README
+- Documented model-based Frontmatter validation and its use in CI
 
 ## 1.2.1 - 2026-10-18
 - Added caching for parsed Markdown content rows using Laravel's configured cache store

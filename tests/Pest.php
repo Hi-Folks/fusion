@@ -39,7 +39,34 @@ expect()->extend('toBeOne', fn() => $this->toBe(1));
 |
 */
 
-function something(): void
+function copyTestDataFile(string $fixture, string $destination): void
 {
-    // ..
+    $source = __DIR__ . '/Data/' . $fixture;
+    $directory = dirname($destination);
+
+    if (! is_dir($directory)) {
+        mkdir($directory, 0777, true);
+    }
+
+    if (! copy($source, $destination)) {
+        throw new RuntimeException("Unable to copy test data fixture [{$fixture}].");
+    }
+}
+
+function createTemporaryTestDirectory(string $prefix): string
+{
+    $directory = sys_get_temp_dir() . '/' . $prefix . '-' . bin2hex(random_bytes(8));
+
+    if (! mkdir($directory, 0777, true) && ! is_dir($directory)) {
+        throw new RuntimeException("Unable to create temporary test directory [{$directory}].");
+    }
+
+    return $directory;
+}
+
+function removeTemporaryTestDirectory(string $directory): void
+{
+    if (is_dir($directory)) {
+        (new Illuminate\Filesystem\Filesystem())->deleteDirectory($directory);
+    }
 }

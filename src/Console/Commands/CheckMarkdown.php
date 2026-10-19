@@ -5,15 +5,19 @@ declare(strict_types=1);
 namespace HiFolks\Fusion\Console\Commands;
 
 use HiFolks\Fusion\Fusion;
+use HiFolks\Fusion\Traits\FusionBaseModelTrait;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Validator;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 use Tempest\Highlight\CommonMark\HighlightExtension;
+use ReflectionClass;
 use RuntimeException;
 use Throwable;
 
@@ -25,6 +29,7 @@ class CheckMarkdown extends Command
     protected $signature = 'fusion:check
     {--dir= : the directory of the Markdown files }
     {--validate : Also render Markdown bodies to check parsing and highlighting }
+    {--model= : Validate Frontmatter using the rules defined by a Fusion model (requires --validate) }
     {--include-valid : Include valid file records in validation output }
     {--changed : Inspect only changed Markdown files reported by Git }
     {--format=table : Output format: table or json }';
@@ -68,6 +73,24 @@ class CheckMarkdown extends Command
             return Command::INVALID;
         }
 
+        $frontmatterRules = null;
+        $modelOption = $this->option('model');
+        if (is_string($modelOption) && $modelOption !== '') {
+            if (! $this->option('validate')) {
+                return $this->invalidReport(
+                    $json,
+                    $modelOption,
+                    'The --model option requires --validate.',
+                );
+            }
+
+            try {
+                $frontmatterRules = $this->rulesForModel($modelOption);
+            } catch (RuntimeException $exception) {
+                return $this->invalidReport($json, $modelOption, $exception->getMessage());
+            }
+        }
+
         $changedFiles = null;
         if ($this->option('changed')) {
             try {
@@ -90,7 +113,12 @@ class CheckMarkdown extends Command
             }
         }
 
-        $report = $this->inspectContent($contentDirectory, (bool) $this->option('validate'), $changedFiles);
+        $report = $this->inspectContent(
+            $contentDirectory,
+            (bool) $this->option('validate'),
+            $changedFiles,
+            $frontmatterRules,
+        );
         if ($this->option('validate') && ! $this->option('include-valid')) {
             $report['files'] = array_values(array_filter(
                 $report['files'],
@@ -109,10 +137,15 @@ class CheckMarkdown extends Command
 
     /**
      * @param  array<int, string>|null  $changedFiles
+     * @param  array<array-key, mixed>|null  $frontmatterRules
      * @return array{status: string, summary: array{files: int, valid: int, invalid: int, errors: int, warnings: int}, files: array<int, array{file: string, fields: array<int, string>, valid: bool}>, findings: array<int, array{file: string, severity: string, rule: string, message: string}>}
      */
-    private function inspectContent(string $contentDirectory, bool $validate, ?array $changedFiles = null): array
-    {
+    private function inspectContent(
+        string $contentDirectory,
+        bool $validate,
+        ?array $changedFiles = null,
+        ?array $frontmatterRules = null,
+    ): array {
         $filesystem = new Filesystem();
         $files = File::allFiles($contentDirectory);
         if ($changedFiles !== null) {
@@ -149,10 +182,12 @@ class CheckMarkdown extends Command
             $markdownByDirectory[$directory] = ($markdownByDirectory[$directory] ?? 0) + 1;
             $fields = [];
             $valid = true;
+            $parsed = false;
 
             try {
                 $document = YamlFrontMatter::parse($filesystem->get($file->getPathname()));
                 $fields = array_map(strval(...), array_keys($document->matter()));
+                $parsed = true;
             } catch (Throwable $exception) {
                 $valid = false;
                 $findings[] = [
@@ -163,7 +198,25 @@ class CheckMarkdown extends Command
                 ];
             }
 
-            if ($validate && $valid) {
+            if ($validate && $parsed) {
+                if ($frontmatterRules !== null) {
+                    $validator = Validator::make($document->matter(), $frontmatterRules);
+
+                    if ($validator->fails()) {
+                        $valid = false;
+                        foreach ($validator->errors()->messages() as $field => $messages) {
+                            foreach ($messages as $message) {
+                                $findings[] = [
+                                    'file' => $relativePath,
+                                    'severity' => 'error',
+                                    'rule' => 'frontmatter.validation',
+                                    'message' => $field . ': ' . $message,
+                                ];
+                            }
+                        }
+                    }
+                }
+
                 try {
                     $converter->convert($document->body());
                 } catch (Throwable $exception) {
@@ -199,6 +252,53 @@ class CheckMarkdown extends Command
         }
 
         return $this->report($inspectedFiles, $findings);
+    }
+
+    /**
+     * @return array<array-key, mixed>
+     */
+    private function rulesForModel(string $modelClass): array
+    {
+        if (! class_exists($modelClass)) {
+            throw new RuntimeException(sprintf('The model class "%s" does not exist.', $modelClass));
+        }
+
+        if (! is_subclass_of($modelClass, Model::class)
+            || ! in_array(FusionBaseModelTrait::class, class_uses_recursive($modelClass), true)) {
+            throw new RuntimeException(sprintf('The model "%s" must be an Eloquent model using FusionBaseModelTrait.', $modelClass));
+        }
+
+        // Sushi initializes its in-memory table during normal model construction.
+        // Rules are declarative, so avoid triggering that work just to read them.
+        $model = new ReflectionClass($modelClass)->newInstanceWithoutConstructor();
+        if (! is_callable([$model, 'frontmatterRules'])) {
+            throw new RuntimeException(sprintf('The model "%s" must define a public frontmatterRules(): array method.', $modelClass));
+        }
+
+        $rules = $model->frontmatterRules();
+        if (! is_array($rules)) {
+            throw new RuntimeException(sprintf('The frontmatterRules() method on "%s" must return an array.', $modelClass));
+        }
+
+        return $rules;
+    }
+
+    private function invalidReport(bool $json, string $file, string $message): int
+    {
+        $report = $this->report([], [[
+            'file' => $file,
+            'severity' => 'error',
+            'rule' => 'frontmatter.model_invalid',
+            'message' => $message,
+        ]]);
+
+        if ($json) {
+            $this->writeJson($report);
+        } else {
+            $this->error($message);
+        }
+
+        return Command::INVALID;
     }
 
     /**
