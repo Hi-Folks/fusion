@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.2 - WIP
+## 1.2.2 - 2026-10-19
 - Added `--changed` to `fusion:check` to inspect modified, staged, and untracked Markdown files reported by Git
 - Added `--base` to `fusion:check --changed` to validate committed Markdown changes relative to a Git ref, including in CI
 - Added opt-in Frontmatter validation to `fusion:check` using Laravel validation rules defined by a Fusion model
