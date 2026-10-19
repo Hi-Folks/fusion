@@ -2,9 +2,18 @@
 
 ## 1.2.2 - WIP
 - Added `--changed` to `fusion:check` to inspect modified, staged, and untracked Markdown files reported by Git
+- Added `--base` to `fusion:check --changed` to validate committed Markdown changes relative to a Git ref, including in CI
 - Added opt-in Frontmatter validation to `fusion:check` using Laravel validation rules defined by a Fusion model
+- Added `--warn-unknown-fields` to report undeclared Frontmatter keys as non-blocking warnings
+- Made `frontmatterRules()` optional; `fusion:check` applies model validation rules only when the model defines the method
+- Added a non-blocking report warning when model-based Frontmatter validation is skipped because `frontmatterRules()` is not defined
+- Added `--interactive` to guide users through quick inventory, deep validation, model selection, and unknown-field warnings
+- Used Laravel Prompts selectors, a searchable fully qualified model picker, and yes/no confirmations to make `fusion:check --interactive` easier to navigate
+- Added `--interactive` to `fusion:check-model` to search discovered classes, enter a model class manually, or list models
 - Documented changed-file checking and its working-tree scope in the README
+- Documented base-ref checking for pull-request CI workflows
 - Documented model-based Frontmatter validation and its use in CI
+- Documented optional warnings for undeclared Frontmatter keys
 
 ## 1.2.1 - 2026-10-18
 - Added caching for parsed Markdown content rows using Laravel's configured cache store

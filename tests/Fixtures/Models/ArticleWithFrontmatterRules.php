@@ -12,6 +12,14 @@ class ArticleWithFrontmatterRules extends Model
     use FusionBaseModelTrait;
 
     /**
+     * @return array<int, string>
+     */
+    public function frontmatterFields(): array
+    {
+        return ['title', 'date', 'tags'];
+    }
+
+    /**
      * @return array<string, array<int, string>>
      */
     public function frontmatterRules(): array

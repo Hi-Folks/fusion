@@ -35,6 +35,39 @@ test('check-model returns invalid when the class does not exist', function () {
         ->assertExitCode(2);
 });
 
+test('interactive check-model searches discovered fully qualified class names', function () {
+    $appPath = sys_get_temp_dir() . '/fusion-interactive-check-model-' . bin2hex(random_bytes(8));
+    $modelsPath = $appPath . '/Models';
+    mkdir($modelsPath, 0777, true);
+    file_put_contents($modelsPath . '/InteractiveCheckModel.php', "<?php\nnamespace App\\Models;\nclass InteractiveCheckModel {}\n");
+    $originalAppPath = app()->path();
+    app()->useAppPath($appPath);
+    class_alias(CheckModelValidFixture::class, 'App\\Models\\InteractiveCheckModel');
+
+    try {
+        $this->artisan('fusion:check-model', ['--interactive' => true])
+            ->expectsQuestion('Search for a model to check', 'InteractiveCheckModel')
+            ->expectsChoice(
+                'Search for a model to check',
+                'App\\Models\\InteractiveCheckModel',
+                ['App\\Models\\InteractiveCheckModel' => 'App\\Models\\InteractiveCheckModel'],
+            )
+            ->expectsOutputToContain('App\\Models\\InteractiveCheckModel')
+            ->assertExitCode(0);
+    } finally {
+        unlink($modelsPath . '/InteractiveCheckModel.php');
+        rmdir($modelsPath);
+        rmdir($appPath);
+        app()->useAppPath($originalAppPath);
+    }
+});
+
+test('interactive check-model requires a terminal', function () {
+    $this->artisan('fusion:check-model', ['--interactive' => true, '--no-interaction' => true])
+        ->expectsOutputToContain('Interactive model checking requires an interactive terminal.')
+        ->assertExitCode(2);
+});
+
 test('check-model lists model classes discovered in app Models', function () {
     $appPath = sys_get_temp_dir() . '/fusion-model-list-' . bin2hex(random_bytes(8));
     $modelsPath = $appPath . '/Models';

@@ -17,7 +17,7 @@ class CheckModel extends Command
      *
      * @var string
      */
-    protected $signature = 'fusion:check-model {--model=} {--dir= : Directory to scan when --model is not provided}';
+    protected $signature = 'fusion:check-model {--model=} {--dir= : Directory to scan when --model is not provided} {--interactive : Choose a model using interactive prompts}';
 
     /**
      * The console command description.
@@ -33,10 +33,66 @@ class CheckModel extends Command
     {
         $model = $this->option('model');
         if ($model === null || $model === '') {
-            return $this->listModels($this->option('dir') ?: app_path('Models'));
+            $modelsDirectory = $this->option('dir') ?: app_path('Models');
+
+            if ($this->option('interactive')) {
+                if (! $this->input->isInteractive()) {
+                    $this->error('Interactive model checking requires an interactive terminal.');
+
+                    return Command::INVALID;
+                }
+
+                return $this->selectModel($modelsDirectory);
+            }
+
+            return $this->listModels($modelsDirectory);
         }
 
         return $this->checkModel($model);
+    }
+
+    private function selectModel(string $modelsDirectory): int
+    {
+        $models = self::discoverModelClasses($modelsDirectory);
+        $enterManually = 'Enter a model class manually';
+        $listModels = 'List models and exit';
+        $choices = $models === [] ? [] : array_combine($models, $models);
+        $choices[$enterManually] = $enterManually;
+        $choices[$listModels] = $listModels;
+
+        if ($models === []) {
+            $this->line('No model classes were found in ' . $modelsDirectory . '.');
+        }
+
+        $selected = \Laravel\Prompts\search(
+            label: 'Search for a model to check',
+            options: static fn(string $query): array => array_filter(
+                $choices,
+                static fn(string $value, string|int $name): bool => $query === ''
+                    || str_contains(strtolower((string) $name), strtolower($query)),
+                ARRAY_FILTER_USE_BOTH,
+            ),
+            placeholder: 'Type a model name or choose an action',
+            hint: 'Search results show fully qualified class names.',
+        );
+
+        if ($selected === $enterManually) {
+            $selected = trim((string) $this->ask('Model class (for example, "App\\Models\\Article")'));
+
+            if ($selected === '') {
+                $this->info('No model class was selected.');
+
+                return Command::SUCCESS;
+            }
+
+            return $this->checkModel($selected);
+        }
+
+        if ($selected === $listModels) {
+            return $this->listModels($modelsDirectory);
+        }
+
+        return $this->checkModel((string) $selected);
     }
 
     private function checkModel(string $model): int
@@ -103,30 +159,17 @@ class CheckModel extends Command
             return Command::SUCCESS;
         }
 
-        $files = new Filesystem()->allFiles($modelsDirectory);
-        usort($files, static fn($left, $right): int => $left->getRelativePathname() <=> $right->getRelativePathname());
-
         $models = [];
-        foreach ($files as $file) {
-            if (strtolower($file->getExtension()) !== 'php') {
-                continue;
-            }
+        foreach (self::discoverModelClasses($modelsDirectory) as $model) {
+            $isEloquentModel = is_subclass_of($model, Model::class);
+            $usesFusionTrait = in_array(FusionBaseModelTrait::class, class_uses_recursive($model));
+            $status = match (true) {
+                ! $isEloquentModel => 'Not an Eloquent model',
+                ! $usesFusionTrait => 'Missing FusionBaseModelTrait',
+                default => 'Fusion compatible',
+            };
 
-            foreach ($this->declaredClasses($file->getPathname()) as $model) {
-                if (! class_exists($model)) {
-                    continue;
-                }
-
-                $isEloquentModel = is_subclass_of($model, Model::class);
-                $usesFusionTrait = in_array(FusionBaseModelTrait::class, class_uses_recursive($model));
-                $status = match (true) {
-                    ! $isEloquentModel => 'Not an Eloquent model',
-                    ! $usesFusionTrait => 'Missing FusionBaseModelTrait',
-                    default => 'Fusion compatible',
-                };
-
-                $models[] = [$model, $status];
-            }
+            $models[] = [$model, $status];
         }
 
         if ($models === []) {
@@ -154,7 +197,35 @@ class CheckModel extends Command
     /**
      * @return array<int, string>
      */
-    private function declaredClasses(string $path): array
+    public static function discoverModelClasses(string $modelsDirectory): array
+    {
+        if (! is_dir($modelsDirectory)) {
+            return [];
+        }
+
+        $files = new Filesystem()->allFiles($modelsDirectory);
+        usort($files, static fn($left, $right): int => $left->getRelativePathname() <=> $right->getRelativePathname());
+
+        $models = [];
+        foreach ($files as $file) {
+            if (strtolower($file->getExtension()) !== 'php') {
+                continue;
+            }
+
+            foreach (self::declaredClasses($file->getPathname()) as $model) {
+                if (class_exists($model)) {
+                    $models[] = $model;
+                }
+            }
+        }
+
+        return $models;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private static function declaredClasses(string $path): array
     {
         $source = file_get_contents($path);
         if ($source === false) {
@@ -194,7 +265,7 @@ class CheckModel extends Command
                 continue;
             }
 
-            if ($token[0] !== T_CLASS || $this->isAnonymousClassOrClassConstant($tokens, $index)) {
+            if ($token[0] !== T_CLASS || self::isAnonymousClassOrClassConstant($tokens, $index)) {
                 continue;
             }
 
@@ -218,7 +289,7 @@ class CheckModel extends Command
     /**
      * @param  array<int, array{0: int, 1: string, 2: int}|string>  $tokens
      */
-    private function isAnonymousClassOrClassConstant(array $tokens, int $classIndex): bool
+    private static function isAnonymousClassOrClassConstant(array $tokens, int $classIndex): bool
     {
         for ($index = $classIndex - 1; $index >= 0; --$index) {
             $token = $tokens[$index];

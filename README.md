@@ -355,15 +355,23 @@ Use `fusion:check` to see which Frontmatter fields are present in your Markdown 
 php artisan fusion:check
 ```
 
+For a guided check, run the command with `--interactive`:
+
+```shell
+php artisan fusion:check --interactive
+```
+
+The guided flow uses Laravel Prompts: arrow-key selectors let you choose a quick field inventory or deep validation, and a searchable picker lets you find model classes under `app/Models` by their fully qualified names (for example, `App\Models\Article`). You can also enter a model class manually or skip model-based validation. For a selected model, yes/no prompts let you enable warnings for fields not declared in `frontmatterFields()` and choose whether to include valid files in the output. You can still pass `--dir` to select a content directory. Interactive mode is for a terminal and human-readable output; use the regular options (without `--interactive`) for scripts and CI. It cannot be combined with `--format=json`, because prompts would make the output invalid JSON.
+
 For a deeper check, use `--validate`. Fusion will also render each Markdown body using its Markdown and syntax-highlighting extensions. This takes more work than the default inventory and is useful when checking content in CI:
 
 ```shell
 php artisan fusion:check --validate
 ```
 
-Deep validation reports Frontmatter parsing and Markdown rendering errors. To also check whether Frontmatter conforms to your application's content schema—for example, whether required fields are present or values have the expected type—pass a Fusion model with `--model`. This is useful for checking editorial content before publishing or catching invalid content in CI. Without `--model`, Fusion does not enforce required fields or field types because those rules are application-specific.
+Deep validation reports Frontmatter parsing and Markdown rendering errors. To also check whether Frontmatter conforms to your application's content schema—for example, whether required fields are present or values have the expected type—pass a Fusion model with `--model` and define `frontmatterRules()` on that model. This is useful for checking editorial content before publishing or catching invalid content in CI. The method is optional: if the model does not define it, Fusion still performs the normal deep check but does not enforce required fields or value types. It reports a non-blocking `frontmatter.rules_not_defined` warning so it is clear that schema validation was skipped. Those rules are application-specific.
 
-Define a public `frontmatterRules()` method on the model and return standard Laravel validation rules:
+To apply schema validation, define a public `frontmatterRules()` method and return standard Laravel validation rules:
 
 ```php
 public function frontmatterRules(): array
@@ -385,7 +393,15 @@ Then pass that model to the deep check:
 php artisan fusion:check --validate --model="App\Models\Article" --format=json
 ```
 
-Fusion parses each Markdown file's Frontmatter and passes the resulting data and the model's rules to Laravel's `Validator`. Validation messages are reported against the file that failed, and any validation error produces a non-zero exit code. The `frontmatterRules()` method is a Fusion convention for supplying rules; Laravel provides the validation engine and rule syntax. This is separate from Eloquent casts: casts transform values when you access model attributes, while validation rules check the parsed Frontmatter values. Database-backed rules such as `unique` can be used too, but may query the database for each file.
+When `frontmatterRules()` is present, Fusion parses each Markdown file's Frontmatter and passes the resulting data and the model's rules to Laravel's `Validator`. Validation messages are reported against the file that failed, and any validation error produces a non-zero exit code. The `frontmatterRules()` method is a Fusion convention for supplying rules; Laravel provides the validation engine and rule syntax. This is separate from Eloquent casts: casts transform values when you access model attributes, while validation rules check the parsed Frontmatter values. Database-backed rules such as `unique` can be used too, but may query the database for each file.
+
+To catch misspelled or unexpected Frontmatter keys, add `--warn-unknown-fields`:
+
+```shell
+php artisan fusion:check --validate --model="App\Models\Article" --warn-unknown-fields --format=json
+```
+
+Fusion compares each file's top-level Frontmatter keys with the model's `frontmatterFields()` list. For example, if the model declares `published` but a file contains `publised`, the report includes a `frontmatter.unknown_field` warning that identifies the file and field and suggests correcting the key or declaring it. Warnings do not make a file invalid or cause a non-zero exit code; this is a heads-up for content typos, not a required-field check. Missing required values should be handled with Laravel rules such as `required` in `frontmatterRules()`. This option requires both `--model` and `--validate`, but does not require `frontmatterRules()`; it is off by default.
 
 For CI scripts and AI agents, add `--format=json`. JSON mode emits only the report, with a summary and findings. When `--validate` is used, the report lists invalid files by default instead of repeating every successful file. Use `--include-valid` to include valid file records as well. Without `--validate`, JSON mode continues to list every inspected file and its Frontmatter fields. Errors produce a non-zero exit code.
 
@@ -418,13 +434,21 @@ To include valid files in that validation report:
 php artisan fusion:check --validate --include-valid --format=json
 ```
 
-To limit a check to Markdown files Git currently reports as modified, staged, or untracked, add `--changed`:
+To limit a check to Markdown files Git currently reports as modified, staged, or untracked in your working tree, add `--changed`:
 
 ```shell
 php artisan fusion:check --validate --changed --format=json
 ```
 
-This is useful during local development when you only want to inspect your current changes. Deleted files are skipped. It uses the working tree status, so it does not select files based on commits in a pull request; CI jobs that need branch-based filtering should provide that comparison separately.
+This is useful during local development when you only want to inspect files you are currently editing. Deleted files are skipped. By default, `--changed` looks at the working tree; it does not include changes that have already been committed to a branch.
+
+For CI, such as a pull-request workflow, use `--base` to check Markdown files committed on the current branch since it diverged from a base ref. This avoids scanning a large content library when a pull request changes only a few files:
+
+```shell
+php artisan fusion:check --validate --changed --base="origin/main" --model="App\Models\Article" --format=json
+```
+
+Git compares `origin/main...HEAD` (the changes since the merge base). The base ref must be available in the checkout; in GitHub Actions, use `actions/checkout` with sufficient history (for example, `fetch-depth: 0`) or fetch the base branch before running the command. This mode checks committed branch changes only: uncommitted and untracked files are not included. Deleted files are skipped because there is no Markdown file left to validate. Use `--changed` without `--base` for local working-tree changes.
 
 The report includes a status (`ok` or `failed`), per-file Frontmatter fields, and findings with a severity, rule, and message. For example:
 
@@ -459,6 +483,14 @@ To scan a different model directory, pass it with `--dir`. Fusion reads the name
 ```shell
 php artisan fusion:check-model --dir=app/Domain/Models
 ```
+
+To choose and check a model interactively, use `--interactive`:
+
+```shell
+php artisan fusion:check-model --interactive
+```
+
+Fusion provides a searchable picker of fully qualified model class names discovered under `app/Models`. You can also enter a class name manually or choose to print the full model list instead. Use `--dir` with `--interactive` to search a different directory. This mode requires a terminal; for scripts and CI, pass `--model` directly or run the command without `--interactive` to list models.
 
 To check a specific class, pass its fully qualified name with `--model`:
 
