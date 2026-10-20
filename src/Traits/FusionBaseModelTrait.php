@@ -33,12 +33,23 @@ trait FusionBaseModelTrait
         );
         $folderName = Str::snake($folderName);
 
-        $resourceDirectory = resource_path('content' . DIRECTORY_SEPARATOR);
-        if (!is_null(config('fusion.content_directory'))) {
-            $resourceDirectory = __DIR__ . '/../../' . config('fusion.content_directory');
+        $configuredDirectory = config('fusion.content_directory');
+        if (! is_string($configuredDirectory) || $configuredDirectory === '') {
+            $resourceDirectory = resource_path('content');
+        } elseif ($this->isAbsolutePath($configuredDirectory)) {
+            $resourceDirectory = $configuredDirectory;
+        } else {
+            $resourceDirectory = base_path($configuredDirectory);
         }
 
-        return $resourceDirectory . $folderName;
+        return rtrim($resourceDirectory, '/\\') . DIRECTORY_SEPARATOR . $folderName;
+    }
+
+    private function isAbsolutePath(string $path): bool
+    {
+        return str_starts_with($path, '/')
+            || str_starts_with($path, '\\')
+            || preg_match('/^[A-Za-z]:[\\\\\/]/', $path) === 1;
     }
 
     public function getRouteKeyName(): string

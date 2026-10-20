@@ -10,6 +10,8 @@
 - Added `--interactive` to guide users through quick inventory, deep validation, model selection, and unknown-field warnings
 - Used Laravel Prompts selectors, a searchable fully qualified model picker, and yes/no confirmations to make `fusion:check --interactive` easier to navigate
 - Added `--interactive` to `fusion:check-model` to search discovered classes, enter a model class manually, or list models
+- Changed `FUSION_CONTENT_DIRECTORY` so relative paths resolve from the Laravel application, absolute paths are supported, and trailing slashes are optional
+- Documented the default, shared-root, and model-specific content folder options, including the `getResourceFolder()` override and its runtime limitation
 - Documented changed-file checking and its working-tree scope in the README
 - Documented base-ref checking for pull-request CI workflows
 - Documented model-based Frontmatter validation and its use in CI

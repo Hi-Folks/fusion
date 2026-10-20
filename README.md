@@ -140,6 +140,45 @@ Markdown goes here
 you can name this file as `resources/content/article/article-1.md`
 You can create similarly the other Markdown files. These files represent your articles.
 
+### Configuring the content directory
+
+By default, Fusion reads content from `resources/content`, then selects a subdirectory based on the model name. For example, `App\Models\Article` reads Markdown files from `resources/content/article`. This keeps content in Laravel's conventional resources directory without additional configuration.
+
+To keep content somewhere else—for example, alongside project documentation or in a shared content folder—set `FUSION_CONTENT_DIRECTORY` to the root directory containing the model-specific subdirectories:
+
+```dotenv
+FUSION_CONTENT_DIRECTORY=content/markdown
+```
+
+Relative paths are resolved from the Laravel application's base directory. With this setting, an `Article` model reads from `content/markdown/article`. Absolute paths are also supported:
+
+```dotenv
+FUSION_CONTENT_DIRECTORY=/srv/my-app/content
+```
+
+In that case, Fusion reads articles from `/srv/my-app/content/article`. The configured value is a shared root; Fusion appends the model's directory name. If you use Laravel's configuration cache, rebuild it after changing the environment value with `php artisan config:cache`.
+
+### Customizing a model's content folder
+
+Choose the option that matches your setup:
+
+| Option | How | Pros | Cons |
+| --- | --- | --- | --- |
+| Default | Put files in `resources/content/{model}`. | No configuration; follows Laravel conventions. | Content must live under `resources/content`. |
+| Shared custom root | Set `FUSION_CONTENT_DIRECTORY`, as above. | One setting moves all model content; supports relative or absolute paths. | Fusion still appends each model's directory name. |
+| Model-specific folder | Override `getResourceFolder()` in the model. | Lets a model read from a uniquely named or external folder. | Requires code in each customized model; the returned path must be a directory. |
+
+For example, to read `Article` files from `docs/posts` regardless of the shared root:
+
+```php
+public function getResourceFolder(): string
+{
+    return base_path('docs/posts');
+}
+```
+
+`getResourceFolder()` is evaluated when Fusion loads the model's rows. Because Fusion uses Sushi to build a table per model class, changing the returned path after that table has been initialized is not a supported way to switch content folders at runtime.
+
 ### Creating the Model
 Similarly, you are doing with a database, you can create your model for loading the markdown files.
 Because you are creating articles you can create your model as `app/Models/Article.php`.

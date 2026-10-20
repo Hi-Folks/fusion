@@ -2,6 +2,49 @@
 
 use HiFolks\Fusion\Models\Page;
 
+function pageModelWithoutBootingSushi(): Page
+{
+    return (new \ReflectionClass(Page::class))->newInstanceWithoutConstructor();
+}
+
+test('content directory configuration resolves relative paths from the application root', function () {
+    $previousDirectory = config('fusion.content_directory');
+    config(['fusion.content_directory' => 'content/markdown']);
+
+    try {
+        expect(pageModelWithoutBootingSushi()->getResourceFolder())
+            ->toBe(base_path('content/markdown/page'));
+    } finally {
+        config(['fusion.content_directory' => $previousDirectory]);
+    }
+});
+
+test('content directory configuration supports absolute paths', function () {
+    $contentDirectory = createTemporaryTestDirectory('fusion-absolute-content');
+    $previousDirectory = config('fusion.content_directory');
+    config(['fusion.content_directory' => $contentDirectory]);
+
+    try {
+        expect(pageModelWithoutBootingSushi()->getResourceFolder())
+            ->toBe($contentDirectory . DIRECTORY_SEPARATOR . 'page');
+    } finally {
+        config(['fusion.content_directory' => $previousDirectory]);
+        removeTemporaryTestDirectory($contentDirectory);
+    }
+});
+
+test('content directory defaults to the Laravel resources content directory', function () {
+    $previousDirectory = config('fusion.content_directory');
+    config(['fusion.content_directory' => null]);
+
+    try {
+        expect(pageModelWithoutBootingSushi()->getResourceFolder())
+            ->toBe(resource_path('content/page'));
+    } finally {
+        config(['fusion.content_directory' => $previousDirectory]);
+    }
+});
+
 test('Model all() method', function () {
     $pages = Page::all();
     expect($pages->count())->toBe(3);
