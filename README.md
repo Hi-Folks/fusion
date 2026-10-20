@@ -213,18 +213,17 @@ Consider that:
 
 ### Creating automatically the Model
 
-Use `fusion:sync-model` when you want a starter Eloquent model generated from the content directory and its discovered Frontmatter fields, rather than writing the model boilerplate by hand:
+Run `fusion:sync-model` after creating a content directory and its Markdown files when you want Fusion to discover their Frontmatter fields and scaffold the Eloquent model for you. This saves you from copying the field names into `frontmatterFields()` by hand. The command is optional; you can create the model manually if you prefer.
 
 ```shell
 php artisan fusion:sync-model --path=resources/content/article --create-model
 ```
 
-The `path` parameter sets the **directory** of the markdown files for a specific model (like article, page, post, project etc.).
-The `--create-model` option will generate automatically the Model file based on the content and the frontmatter section of the Markdown files.
-Without the `--create-model` option the `fusion:sync-model` command will list some information detected from Markdown like the name of the Model and the list of the fields.
+The `--path` option points to one content-type directory, such as `resources/content/article`. If omitted, the command uses `resources/content/article`. The directory's name determines the model name (`article` becomes `Article`), and the generated class is placed at `app/Models/Article.php` in the `App\Models` namespace.
 
+The command reads Frontmatter from files directly inside that directory (it does not scan nested directories), combines the discovered keys, and places them in the generated `frontmatterFields()` method. It creates a starter model using `FusionBaseModelTrait`; it does not infer casts or validation rules, so add `casts()` or `frontmatterRules()` yourself when needed.
 
-
+Without `--create-model`, the command only reports the detected model name, destination path, and fields. With `--create-model`, it generates the model only if that file does not already exist; it will not overwrite an existing model. Review the generated file before using it, especially if your content has no Frontmatter fields.
 
 ### Querying the content
 Now in your Controllers or your Blade components, you can use the `Article` model with the usual method like `where()`, `orderBy()` etc:
