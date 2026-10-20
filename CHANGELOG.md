@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3 - 2026-10-20
+- Fixed `FUSION_CONTENT_DIRECTORY` so relative paths resolve from the Laravel application base directory; absolute paths are also supported
+- Documented the default, shared-root, and model-specific content folder options, including overriding `getResourceFolder()` and its runtime limitation
+
 ## 1.2.2 - 2026-10-19
 - Added `--changed` to `fusion:check` to inspect modified, staged, and untracked Markdown files reported by Git
 - Added `--base` to `fusion:check --changed` to validate committed Markdown changes relative to a Git ref, including in CI
@@ -10,8 +14,6 @@
 - Added `--interactive` to guide users through quick inventory, deep validation, model selection, and unknown-field warnings
 - Used Laravel Prompts selectors, a searchable fully qualified model picker, and yes/no confirmations to make `fusion:check --interactive` easier to navigate
 - Added `--interactive` to `fusion:check-model` to search discovered classes, enter a model class manually, or list models
-- Changed `FUSION_CONTENT_DIRECTORY` so relative paths resolve from the Laravel application, absolute paths are supported, and trailing slashes are optional
-- Documented the default, shared-root, and model-specific content folder options, including the `getResourceFolder()` override and its runtime limitation
 - Documented changed-file checking and its working-tree scope in the README
 - Documented base-ref checking for pull-request CI workflows
 - Documented model-based Frontmatter validation and its use in CI
