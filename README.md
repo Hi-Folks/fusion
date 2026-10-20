@@ -226,14 +226,35 @@ The command reads Frontmatter from files directly inside that directory (it does
 Without `--create-model`, the command only reports the detected model name, destination path, and fields. With `--create-model`, it generates the model only if that file does not already exist; it will not overwrite an existing model. Review the generated file before using it, especially if your content has no Frontmatter fields.
 
 ### Querying the content
-Now in your Controllers or your Blade components, you can use the `Article` model with the usual method like `where()`, `orderBy()` etc:
+Once the model declares its Frontmatter keys in `frontmatterFields()`, you can query those values with familiar Eloquent methods. For example, to list published articles in a category, newest first:
+
+The examples below assume `published`, `category`, `date`, and `title` are included in `frontmatterFields()`.
 
 ```php
-$articles = \App\Models\Article
-    ::where('published', true)
-    ->orderBy('date')
+$articles = \App\Models\Article::query()
+    ->where('published', true)
+    ->where('category', 'laravel')
+    ->orderByDesc('date')
     ->get();
 ```
+
+You can combine conditions, use methods such as `whereIn()`, and choose ascending or descending order with `orderBy()` or `orderByDesc()`. For example, to show a paginated list of published articles from selected categories:
+
+```php
+$articles = \App\Models\Article::query()
+    ->where('published', true)
+    ->whereIn('category', ['laravel', 'php'])
+    ->orderBy('title')
+    ->paginate(12);
+```
+
+To retrieve one article, use its slug. The slug comes from the Markdown filename by default, or from the `slug` Frontmatter value if one is set:
+
+```php
+$article = \App\Models\Article::where('slug', $slug)->firstOrFail();
+```
+
+These filters and sorts run through Eloquent against Fusion's in-memory model table; they do not modify the Markdown files. Make sure every Frontmatter field you query is included in the model's `frontmatterFields()` list.
 
 ### Content caching
 
